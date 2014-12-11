@@ -7,7 +7,7 @@ build = "build.rs"
 tags = ["freetype", "ffi"]
 description = "Low level binding for FreeType font library"
 license = "MIT"
-readme = "../README.md"
+readme = "README.md"
 repository = "https://github.com/PistonDevelopers/freetype-rs.git"
 homepage = "https://github.com/PistonDevelopers/freetype-rs"
 
