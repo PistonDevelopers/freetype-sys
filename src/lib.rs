@@ -2,6 +2,8 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
+#![deny(missing_copy_implementations)]
+#![deny(raw_pointer_deriving)]
 
 extern crate libc;
 
@@ -67,6 +69,7 @@ impl FTErrorMethods for FT_Error {
 
 // Structs
 #[repr(C)]
+#[deriving(Copy)]
 pub struct FT_Vector {
     pub x: FT_Pos,
     pub y: FT_Pos,
@@ -110,6 +113,7 @@ impl Div<FT_Pos, FT_Vector> for FT_Vector {
 
 
 #[repr(C)]
+#[deriving(Copy)]
 pub struct FT_BBox {
     pub xMin: FT_Pos,
     pub yMin: FT_Pos,
@@ -118,6 +122,7 @@ pub struct FT_BBox {
 }
 
 #[repr(C)]
+#[deriving(Copy)]
 pub struct FT_Matrix {
     pub xx: FT_Fixed,
     pub xy: FT_Fixed,
@@ -126,12 +131,14 @@ pub struct FT_Matrix {
 }
 
 #[repr(C)]
+#[deriving(Copy)]
 pub struct FT_UnitVector {
     pub x: FT_F2Dot14,
     pub y: FT_F2Dot14,
 }
 
 #[repr(C)]
+#[allow(missing_copy_implementations)]
 pub struct FT_Bitmap {
     pub rows: c_int,
     pub width: c_int,
@@ -144,18 +151,21 @@ pub struct FT_Bitmap {
 }
 
 #[repr(C)]
+#[allow(missing_copy_implementations)]
 pub struct FT_Data {
     pub pointer: *const FT_Byte,
     pub length: FT_Int,
 }
 
 #[repr(C)]
+#[allow(missing_copy_implementations)]
 pub struct FT_Generic {
     pub data: *const c_void,
     pub finalizer: FT_Generic_Finalizer,
 }
 
 #[repr(C)]
+#[deriving(Copy)]
 pub struct FT_Size_Metrics {
     pub x_ppem: FT_UShort,
     pub y_ppem: FT_UShort,
@@ -170,6 +180,7 @@ pub struct FT_Size_Metrics {
 }
 
 #[repr(C)]
+#[allow(missing_copy_implementations)]
 pub struct FT_Outline {
     pub n_contours: c_short,
     pub n_points: c_short,
@@ -182,6 +193,7 @@ pub struct FT_Outline {
 }
 
 #[repr(C)]
+#[deriving(Copy)]
 pub struct FT_Glyph_Metrics {
     pub width: FT_Pos,
     pub height: FT_Pos,
@@ -196,12 +208,14 @@ pub struct FT_Glyph_Metrics {
 }
 
 #[repr(C)]
+#[deriving(Copy)]
 pub struct FT_Parameter {
     pub tag: FT_ULong,
     pub data: FT_Pointer,
 }
 
 #[repr(C)]
+#[allow(missing_copy_implementations)]
 pub struct FT_Open_Args {
     pub flags: FT_UInt,
     pub memory_base: *const FT_Byte,
@@ -214,6 +228,7 @@ pub struct FT_Open_Args {
 }
 
 #[repr(C)]
+#[deriving(Copy)]
 pub struct FT_Bitmap_Size {
     pub height: FT_Short,
     pub width: FT_Short,
@@ -225,6 +240,7 @@ pub struct FT_Bitmap_Size {
 }
 
 #[repr(C)]
+#[deriving(Copy)]
 pub struct TT_OS2 {
     pub version: FT_UShort,
     pub xAvgCharWidth: FT_Short,
@@ -534,6 +550,7 @@ pub type FT_Slot_InternalRec = c_void;
 pub type FT_Face_InternalRec = c_void;
 
 #[repr(C)]
+#[deriving(Copy)]
 pub struct FT_CharMapRec {
     pub face: FT_Face,
     pub encoding: FT_Encoding,
@@ -542,6 +559,7 @@ pub struct FT_CharMapRec {
 }
 
 #[repr(C)]
+#[allow(missing_copy_implementations)]
 pub struct FT_FaceRec {
     pub num_faces: FT_Long,
     pub face_index: FT_Long,
@@ -594,6 +612,7 @@ pub struct FT_FaceRec {
 }
 
 #[repr(C)]
+#[allow(missing_copy_implementations)]
 pub struct FT_GlyphSlotRec {
     pub library: FT_Library,
     pub face: FT_Face,
@@ -637,6 +656,7 @@ pub struct FT_SizeRec {
 }
 
 #[repr(C)]
+#[allow(missing_copy_implementations)]
 pub struct FT_StreamRec {
     pub base: *const c_uchar,
     pub size: c_ulong,
@@ -653,6 +673,7 @@ pub struct FT_StreamRec {
 }
 
 #[repr(C)]
+#[allow(missing_copy_implementations)]
 pub struct FT_MemoryRec {
     pub user: *mut c_void,
     pub alloc: FT_Alloc_Func,
@@ -661,12 +682,14 @@ pub struct FT_MemoryRec {
 }
 
 #[repr(C)]
+#[deriving(Copy)]
 pub struct FT_ListRec {
     pub head: FT_ListNode,
     pub tail: FT_ListNode,
 }
 
 #[repr(C)]
+#[allow(missing_copy_implementations)]
 pub struct FT_ListNodeRec {
     pub prev: FT_ListNode,
     pub next: FT_ListNode,
@@ -674,6 +697,7 @@ pub struct FT_ListNodeRec {
 }
 
 #[repr(C)]
+#[deriving(Copy)]
 pub struct FT_Size_RequestRec {
     pub size_request_type: FT_Size_Request_Type, // type
     pub width: FT_Long,
@@ -683,6 +707,7 @@ pub struct FT_Size_RequestRec {
 }
 
 #[repr(C)]
+#[allow(missing_copy_implementations)]
 pub struct FT_GlyphRec {
     pub library: FT_Library,
     pub clazz: *const c_void, // FT_Glyph_Class
@@ -691,6 +716,7 @@ pub struct FT_GlyphRec {
 }
 
 #[repr(C)]
+#[allow(missing_copy_implementations)]
 pub struct FT_BitmapGlyphRec {
     pub root: FT_GlyphRec,
     pub left: FT_Int,
@@ -699,6 +725,7 @@ pub struct FT_BitmapGlyphRec {
 }
 
 #[repr(C)]
+#[allow(missing_copy_implementations)]
 pub struct FT_OutlineGlyphRec {
     pub root: FT_GlyphRec,
     pub outline: FT_Outline,
