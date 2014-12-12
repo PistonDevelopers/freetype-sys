@@ -3,8 +3,9 @@
 name = "freetype-sys"
 version = "0.0.1"
 authors = ["Coeuvre <coeuvre@gmail.com>"]
+links = "freetype"
 build = "build.rs"
-tags = ["freetype", "ffi"]
+keywords = ["freetype", "ffi"]
 description = "Low level binding for FreeType font library"
 license = "MIT"
 readme = "README.md"
