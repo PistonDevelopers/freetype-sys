@@ -644,6 +644,8 @@ pub struct FT_MemoryRec {
     pub realloc: FT_Realloc_Func,
 }
 
+unsafe impl Sync for FT_MemoryRec {}
+
 #[repr(C)]
 #[deriving(Copy)]
 pub struct FT_ListRec {
