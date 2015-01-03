@@ -69,14 +69,14 @@ impl FTErrorMethods for FT_Error {
 
 // Structs
 #[repr(C)]
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct FT_Vector {
     pub x: FT_Pos,
     pub y: FT_Pos,
 }
 
 #[repr(C)]
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct FT_BBox {
     pub xMin: FT_Pos,
     pub yMin: FT_Pos,
@@ -85,7 +85,7 @@ pub struct FT_BBox {
 }
 
 #[repr(C)]
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct FT_Matrix {
     pub xx: FT_Fixed,
     pub xy: FT_Fixed,
@@ -94,7 +94,7 @@ pub struct FT_Matrix {
 }
 
 #[repr(C)]
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct FT_UnitVector {
     pub x: FT_F2Dot14,
     pub y: FT_F2Dot14,
@@ -128,7 +128,7 @@ pub struct FT_Generic {
 }
 
 #[repr(C)]
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct FT_Size_Metrics {
     pub x_ppem: FT_UShort,
     pub y_ppem: FT_UShort,
@@ -156,7 +156,7 @@ pub struct FT_Outline {
 }
 
 #[repr(C)]
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct FT_Glyph_Metrics {
     pub width: FT_Pos,
     pub height: FT_Pos,
@@ -171,7 +171,7 @@ pub struct FT_Glyph_Metrics {
 }
 
 #[repr(C)]
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct FT_Parameter {
     pub tag: FT_ULong,
     pub data: FT_Pointer,
@@ -191,7 +191,7 @@ pub struct FT_Open_Args {
 }
 
 #[repr(C)]
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct FT_Bitmap_Size {
     pub height: FT_Short,
     pub width: FT_Short,
@@ -203,7 +203,7 @@ pub struct FT_Bitmap_Size {
 }
 
 #[repr(C)]
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct TT_OS2 {
     pub version: FT_UShort,
     pub xAvgCharWidth: FT_Short,
@@ -222,7 +222,7 @@ pub struct TT_OS2 {
     pub yStrikeoutPosition: FT_Short,
     pub sFamilyClass: FT_Short,
 
-    pub panose: [FT_Byte, ..10],
+    pub panose: [FT_Byte; 10],
 
     pub ulUnicodeRange1: FT_ULong, /* Bits 0-31   */
     pub ulUnicodeRange2: FT_ULong, /* Bits 32-63  */
@@ -513,7 +513,7 @@ pub type FT_Slot_InternalRec = c_void;
 pub type FT_Face_InternalRec = c_void;
 
 #[repr(C)]
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct FT_CharMapRec {
     pub face: FT_Face,
     pub encoding: FT_Encoding,
@@ -647,7 +647,7 @@ pub struct FT_MemoryRec {
 unsafe impl Sync for FT_MemoryRec {}
 
 #[repr(C)]
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct FT_ListRec {
     pub head: FT_ListNode,
     pub tail: FT_ListNode,
@@ -662,7 +662,7 @@ pub struct FT_ListNodeRec {
 }
 
 #[repr(C)]
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct FT_Size_RequestRec {
     pub size_request_type: FT_Size_Request_Type, // type
     pub width: FT_Long,
