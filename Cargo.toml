@@ -9,8 +9,8 @@ keywords = ["freetype", "ffi"]
 description = "Low level binding for FreeType font library"
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/PistonDevelopers/freetype-rs.git"
-homepage = "https://github.com/PistonDevelopers/freetype-rs"
+repository = "https://github.com/PistonDevelopers/freetype-sys.git"
+homepage = "https://github.com/PistonDevelopers/freetype-sys"
 
 [build-dependencies]
 pkg-config = "*"
