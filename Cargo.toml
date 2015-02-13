@@ -17,3 +17,4 @@ pkg-config = "*"
 
 [dependencies]
 libz-sys = "*"
+libc = "*"
