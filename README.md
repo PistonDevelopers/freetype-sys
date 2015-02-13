@@ -1,4 +1,4 @@
-freetype-sys
+freetype-sys [![Build Status](https://travis-ci.org/PistonDevelopers/freetype-sys.svg?branch=master)](https://travis-ci.org/PistonDevelopers/freetype-sys)
 ============
 
 Low level bindings for the FreeType font library
