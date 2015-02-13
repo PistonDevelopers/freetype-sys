@@ -18,3 +18,6 @@ pkg-config = "*"
 [dependencies]
 libz-sys = "*"
 libc = "*"
+
+[features]
+nopkgcfg = []
