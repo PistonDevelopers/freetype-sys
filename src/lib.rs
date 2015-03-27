@@ -62,7 +62,7 @@ pub trait FTErrorMethods {
 }
 
 impl FTErrorMethods for FT_Error {
-    fn succeeded(&self) -> bool { *self == 0 as FT_Error }
+    fn succeeded(&self) -> bool { *self == 0 }
 }
 
 
@@ -827,4 +827,3 @@ extern "C" {
     pub fn FT_Glyph_To_Bitmap(the_glyph: *const FT_Glyph, render_mode: FT_Render_Mode, origin: *const FT_Vector, destroy: FT_Bool) -> FT_Error;
     pub fn FT_Done_Glyph(glyph: FT_Glyph);
 }
-
