@@ -5,9 +5,9 @@ fn main() {
         Ok(_) => return,
         Err(_) => {
             if cfg!(windows) {
-                println!("cargo:rustc-flags=-l freetype-6:dylib");
+                println!("cargo:rustc-link-lib=dylib=freetype-6");
             } else {
-                println!("cargo:rustc-flags=-l freetype:dylib");
+                println!("cargo:rustc-link-lib=dylib=freetype");
             }
         }
     }
