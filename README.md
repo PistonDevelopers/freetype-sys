@@ -16,19 +16,23 @@ In order to easily set-up freetype:
 
 ```toml
 [target.i686-pc-windows-gnu.freetype]
-rustc-flags = "-L C:\\Path\\To\\Freetype -l freetype-6:dylib"
+rustc-link-search = ["C:\\Path\\To\\Freetype"]
+rustc-link-lib = ["freetype-6"]
 root = "C:\\Path\\To\\Freetype"
 
 [target.x86_64-pc-windows-gnu.freetype]
-rustc-flags = "-L C:\\Path\\To\\Freetype -l freetype-6:dylib"
+rustc-link-search = ["C:\\Path\\To\\Freetype"]
+rustc-link-lib = ["freetype-6"]
 root = "C:\\Path\\To\\Freetype"
 
 [target.i686-pc-windows-gnu.z]
-rustc-flags = "-L C:\\Path\\To\\Zlib -l zlib1:dylib"
+rustc-link-search = ["C:\\Path\\To\\Zlib"]
+rustc-link-lib = ["zlib1"]
 root = "C:\\Path\\To\\Zlib"
 
 [target.x86_64-pc-windows-gnu.z]
-rustc-flags = "-L C:\\Path\\To\\Zlib -l zlib1:dylib"
+rustc-link-search = ["C:\\Path\\To\\Zlib"]
+rustc-link-lib = ["zlib1"]
 root = "C:\\Path\\To\\Zlib"
 ```
 
