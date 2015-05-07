@@ -43,15 +43,15 @@ pub type FT_String = c_char;
 pub type FT_Tag = FT_UInt32;
 pub type FT_Error = c_int;
 pub type FT_Fixed = c_long;
-pub type FT_Pointer = *const c_void;
+pub type FT_Pointer = *mut c_void;
 pub type FT_Pos = c_long;
 pub type FT_FWord = c_short;
 pub type FT_UFWord = c_ushort;
 pub type FT_F2Dot14 = c_short;
 pub type FT_F26Dot6 = c_long;
-pub type FT_Generic_Finalizer = extern fn(*const c_void);
-pub type FT_StreamDesc = *const c_void;
-pub type FT_Stream_IoFunc = extern fn(FT_Stream, c_ulong, *const c_uchar, c_ulong) -> c_ulong;
+pub type FT_Generic_Finalizer = extern fn(*mut c_void);
+pub type FT_StreamDesc = *mut c_void;
+pub type FT_Stream_IoFunc = extern fn(FT_Stream, c_ulong, *mut c_uchar, c_ulong) -> c_ulong;
 pub type FT_Stream_CloseFunc = extern fn(FT_Stream);
 pub type FT_Alloc_Func = extern fn(FT_Memory, c_long) -> *mut c_void;
 pub type FT_Free_Func = extern fn(FT_Memory, *mut c_void);
@@ -105,11 +105,11 @@ pub struct FT_Bitmap {
     pub rows: c_int,
     pub width: c_int,
     pub pitch: c_int,
-    pub buffer: *const c_uchar,
+    pub buffer: *mut c_uchar,
     pub num_grays: c_short,
     pub pixel_mode: c_char,
     pub palette_mode: c_char,
-    pub palette: *const c_void,
+    pub palette: *mut c_void,
 }
 
 #[repr(C)]
@@ -122,7 +122,7 @@ pub struct FT_Data {
 #[repr(C)]
 #[allow(missing_copy_implementations)]
 pub struct FT_Generic {
-    pub data: *const c_void,
+    pub data: *mut c_void,
     pub finalizer: FT_Generic_Finalizer,
 }
 
@@ -147,9 +147,9 @@ pub struct FT_Outline {
     pub n_contours: c_short,
     pub n_points: c_short,
 
-    pub points: *const FT_Vector,
-    pub tags: *const c_char,
-    pub contours: *const c_short,
+    pub points: *mut FT_Vector,
+    pub tags: *mut c_char,
+    pub contours: *mut c_short,
 
     pub flags: c_int,
 }
@@ -186,7 +186,7 @@ pub struct FT_Open_Args {
     pub stream: FT_Stream,
     pub driver: FT_Module,
     pub num_params: FT_Int,
-    pub params: *const FT_Parameter,
+    pub params: *mut FT_Parameter,
 }
 
 #[repr(C)]
@@ -494,7 +494,7 @@ pub type FT_Slot_Internal = *mut FT_Slot_InternalRec;
 pub type FT_Size_Request = *mut FT_Size_RequestRec;
 pub type FT_Face_Internal = *mut FT_Face_InternalRec;
 pub type FT_Stream = *mut FT_StreamRec;
-pub type FT_Memory = *const FT_MemoryRec;
+pub type FT_Memory = *mut FT_MemoryRec;
 pub type FT_ListNode = *mut FT_ListNodeRec;
 pub type FT_Glyph = *mut FT_GlyphRec;
 pub type FT_BitmapGlyph = *mut FT_BitmapGlyphRec;
@@ -531,14 +531,14 @@ pub struct FT_FaceRec {
 
     pub num_glyphs: FT_Long,
 
-    pub family_name: *const FT_String,
-    pub style_name: *const FT_String,
+    pub family_name: *mut FT_String,
+    pub style_name: *mut FT_String,
 
     pub num_fixed_sizes: FT_Int,
-    pub available_sizes: *const FT_Bitmap_Size,
+    pub available_sizes: *mut FT_Bitmap_Size,
 
     pub num_charmaps: FT_Int,
-    pub charmaps: *const FT_CharMap,
+    pub charmaps: *mut FT_CharMap,
 
     pub generic: FT_Generic,
 
@@ -567,7 +567,7 @@ pub struct FT_FaceRec {
     pub sizes_list: FT_ListRec,
 
     pub autohint: FT_Generic,
-    pub extensions: *const c_void,
+    pub extensions: *mut c_void,
 
     pub internal: FT_Face_Internal,
     /* @private end */
@@ -598,13 +598,13 @@ pub struct FT_GlyphSlotRec {
     pub num_subglyphs: FT_UInt,
     pub subglyphs: FT_SubGlyph,
 
-    pub control_data: *const c_void,
+    pub control_data: *mut c_void,
     pub control_len: c_long,
 
     pub lsb_delta: FT_Pos,
     pub rsb_delta: FT_Pos,
 
-    pub other: *const c_void,
+    pub other: *mut c_void,
 
     pub internal: FT_Slot_Internal,
 }
@@ -620,7 +620,7 @@ pub struct FT_SizeRec {
 #[repr(C)]
 #[allow(missing_copy_implementations)]
 pub struct FT_StreamRec {
-    pub base: *const c_uchar,
+    pub base: *mut c_uchar,
     pub size: c_ulong,
     pub pos: c_ulong,
 
@@ -630,8 +630,8 @@ pub struct FT_StreamRec {
     pub close: FT_Stream_CloseFunc,
 
     pub memory: FT_Memory,
-    pub cursor: *const c_uchar,
-    pub limit: *const c_uchar,
+    pub cursor: *mut c_uchar,
+    pub limit: *mut c_uchar,
 }
 
 #[repr(C)]
@@ -657,7 +657,7 @@ pub struct FT_ListRec {
 pub struct FT_ListNodeRec {
     pub prev: FT_ListNode,
     pub next: FT_ListNode,
-    pub data: *const c_void,
+    pub data: *mut c_void,
 }
 
 #[repr(C)]
@@ -805,10 +805,10 @@ extern "C" {
     pub fn FT_Set_Pixel_Sizes(face: FT_Face, pixel_width: FT_UInt, pixel_height: FT_UInt) -> FT_Error;
     pub fn FT_Load_Glyph(face: FT_Face, glyph_index: FT_UInt, load_flags: FT_Int32) -> FT_Error;
     pub fn FT_Load_Char(face: FT_Face, char_code: FT_ULong, load_flags: FT_Int32) -> FT_Error;
-    pub fn FT_Set_Transform(face: FT_Face, matrix: *const FT_Matrix, delta: *const FT_Vector);
+    pub fn FT_Set_Transform(face: FT_Face, matrix: *mut FT_Matrix, delta: *mut FT_Vector);
     pub fn FT_Render_Glyph(slot: FT_GlyphSlot, render_mode: FT_Render_Mode) -> FT_Error;
     pub fn FT_Get_Kerning(face: FT_Face, left_glyph: FT_UInt, right_glyph: FT_UInt, kern_mode: FT_UInt, akerning: *mut FT_Vector) -> FT_Error;
-    pub fn FT_Get_Track_Kerning(face: FT_Face, point_size: FT_Fixed, degree: FT_Int, akerning: *const FT_Fixed) -> FT_Error;
+    pub fn FT_Get_Track_Kerning(face: FT_Face, point_size: FT_Fixed, degree: FT_Int, akerning: *mut FT_Fixed) -> FT_Error;
     pub fn FT_Get_Glyph_Name(face: FT_Face, glyph_index: FT_UInt, buffer: FT_Pointer, buffer_max: FT_UInt) -> FT_Error;
     pub fn FT_Get_Postscript_Name(face: FT_Face) -> *const c_char;
     pub fn FT_Select_CharMap(face: FT_Face, encoding: FT_Encoding) -> FT_Error;
@@ -822,8 +822,8 @@ extern "C" {
     pub fn FT_Get_FSType_Flags(face: FT_Face) -> FT_UShort;
     pub fn FT_Get_Glyph(slot: FT_GlyphSlot, aglyph: *mut FT_Glyph) -> FT_Error;
     pub fn FT_Glyph_Copy(source: FT_Glyph, target: *mut FT_Glyph) -> FT_Error;
-    pub fn FT_Glyph_Transform(glyph: FT_Glyph, matrix: *const FT_Matrix, delta: *const FT_Vector) -> FT_Error;
-    pub fn FT_Glyph_Get_CBox(glyph: FT_Glyph, bbox_mode: FT_UInt, acbox: *const FT_BBox);
-    pub fn FT_Glyph_To_Bitmap(the_glyph: *const FT_Glyph, render_mode: FT_Render_Mode, origin: *const FT_Vector, destroy: FT_Bool) -> FT_Error;
+    pub fn FT_Glyph_Transform(glyph: FT_Glyph, matrix: *mut FT_Matrix, delta: *mut FT_Vector) -> FT_Error;
+    pub fn FT_Glyph_Get_CBox(glyph: FT_Glyph, bbox_mode: FT_UInt, acbox: *mut FT_BBox);
+    pub fn FT_Glyph_To_Bitmap(the_glyph: *mut FT_Glyph, render_mode: FT_Render_Mode, origin: *mut FT_Vector, destroy: FT_Bool) -> FT_Error;
     pub fn FT_Done_Glyph(glyph: FT_Glyph);
 }
