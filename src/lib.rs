@@ -792,7 +792,7 @@ extern "C" {
     pub fn FT_Done_Library(library: FT_Library) -> FT_Error;
     pub fn FT_Reference_Library(library: FT_Library) -> FT_Error;
     pub fn FT_Add_Default_Modules(library: FT_Library);
-    pub fn FT_New_Face(library: FT_Library, filepathname: *const i8, face_index: FT_Long, aface: *mut FT_Face) -> FT_Error;
+    pub fn FT_New_Face(library: FT_Library, filepathname: *const c_char, face_index: FT_Long, aface: *mut FT_Face) -> FT_Error;
     pub fn FT_New_Memory_Face(library: FT_Library, file_base: *const FT_Byte, file_size: FT_Long, face_index: FT_Long, aface: *mut FT_Face) -> FT_Error;
     pub fn FT_Open_Face(library: FT_Library, args: *const FT_Open_Args, face_index: FT_Long, aface: *mut FT_Face) -> FT_Error;
     pub fn FT_Attach_File(face: FT_Face, filepathname: *const c_char) -> FT_Error;
