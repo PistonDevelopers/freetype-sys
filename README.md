@@ -8,7 +8,7 @@ Low level bindings for the FreeType font library
 In order to easily set-up freetype:
 
  - Download precompiled versions of `libfreetype-6.dll` and `zlib1.dll`
-   ([32bits](http://www.freetype.org/download.html)/[64bits](http://www.gtk.org/download/win64.php))
+   ([32bits](http://www.gtk.org/download/win32.php) or [64bits](http://www.gtk.org/download/win64.php))
 
  - In the root of your project, in one of the parent directories, or in your home directory,
    create a `.cargo` directory. This directory should contain a `config`
