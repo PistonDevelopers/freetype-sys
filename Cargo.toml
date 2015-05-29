@@ -1,7 +1,7 @@
 [package]
 
 name = "freetype-sys"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Coeuvre <coeuvre@gmail.com>"]
 links = "freetype"
 build = "build.rs"
@@ -17,4 +17,4 @@ pkg-config = "0.3.3"
 
 [dependencies]
 libz-sys = "0.1.3"
-libc = "0.1.5"
+libc = "0.1"
