@@ -37,3 +37,16 @@ root = "C:\\Path\\To\\Zlib"
 ```
 
 For more informations, check [the official Cargo documentation](http://doc.crates.io/build-script.html#overriding-build-scripts).
+
+## If you use Msys2
+Another way with Msys2. Install package:
+```
+pacman -S mingw-w64-x86_64-freetype
+```
+
+Also you need to set path for linker:
+```
+export LIBRARY_PATH=/C/msys64/mingw64/bin/
+```
+
+And don't forget to add library to search path for your runtime.
