@@ -18,22 +18,18 @@ In order to easily set-up freetype:
 [target.i686-pc-windows-gnu.freetype]
 rustc-link-search = ["C:\\Path\\To\\32bits\\Freetype"]
 rustc-link-lib = ["freetype-6"]
-root = "C:\\Path\\To\\Freetype"
 
 [target.x86_64-pc-windows-gnu.freetype]
 rustc-link-search = ["C:\\Path\\To\\64bits\\Freetype"]
 rustc-link-lib = ["freetype-6"]
-root = "C:\\Path\\To\\Freetype"
 
 [target.i686-pc-windows-gnu.z]
 rustc-link-search = ["C:\\Path\\To\\32bits\\Zlib"]
 rustc-link-lib = ["zlib1"]
-root = "C:\\Path\\To\\Zlib"
 
 [target.x86_64-pc-windows-gnu.z]
 rustc-link-search = ["C:\\Path\\To\\64bits\\Zlib"]
 rustc-link-lib = ["zlib1"]
-root = "C:\\Path\\To\\Zlib"
 ```
 
 For more informations, check [the official Cargo documentation](http://doc.crates.io/build-script.html#overriding-build-scripts).
