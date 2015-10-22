@@ -7,7 +7,7 @@ Low level bindings for the FreeType font library
 
 In order to easily set-up freetype:
 
- - Download precompiled versions of `libfreetype-6.dll` and `zlib1.dll`
+ - Download precompiled versions of `libfreetype6.dll` and `zlib1.dll`
    ([32bits](http://www.gtk.org/download/win32.php) or [64bits](http://www.gtk.org/download/win64.php))
 
  - In the root of your project, in one of the parent directories, or in your home directory,
@@ -17,11 +17,11 @@ In order to easily set-up freetype:
 ```toml
 [target.i686-pc-windows-gnu.freetype]
 rustc-link-search = ["C:\\Path\\To\\32bits\\Freetype"]
-rustc-link-lib = ["freetype-6"]
+rustc-link-lib = ["freetype6"]
 
 [target.x86_64-pc-windows-gnu.freetype]
 rustc-link-search = ["C:\\Path\\To\\64bits\\Freetype"]
-rustc-link-lib = ["freetype-6"]
+rustc-link-lib = ["freetype6"]
 
 [target.i686-pc-windows-gnu.z]
 rustc-link-search = ["C:\\Path\\To\\32bits\\Zlib"]
