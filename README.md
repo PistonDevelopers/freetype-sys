@@ -15,11 +15,11 @@ In order to easily set-up freetype:
    file that contains the following snippet:
 
 ```toml
-[target.i686-pc-windows-gnu.freetype]
+[target.i686-pc-windows-gnu.freetype6]
 rustc-link-search = ["C:\\Path\\To\\32bits\\Freetype"]
 rustc-link-lib = ["freetype6"]
 
-[target.x86_64-pc-windows-gnu.freetype]
+[target.x86_64-pc-windows-gnu.freetype6]
 rustc-link-search = ["C:\\Path\\To\\64bits\\Freetype"]
 rustc-link-lib = ["freetype6"]
 
