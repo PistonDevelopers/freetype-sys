@@ -2,7 +2,6 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 #![deny(missing_copy_implementations)]
-#![deny(raw_pointer_derive)]
 
 extern crate libc;
 
