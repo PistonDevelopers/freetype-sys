@@ -825,4 +825,10 @@ extern "C" {
     pub fn FT_Glyph_Get_CBox(glyph: FT_Glyph, bbox_mode: FT_UInt, acbox: *mut FT_BBox);
     pub fn FT_Glyph_To_Bitmap(the_glyph: *mut FT_Glyph, render_mode: FT_Render_Mode, origin: *mut FT_Vector, destroy: FT_Bool) -> FT_Error;
     pub fn FT_Done_Glyph(glyph: FT_Glyph);
+    pub fn FT_MulDiv(a: FT_Long, b: FT_Long, c: FT_Long) -> FT_Long;
+    pub fn FT_MulFix(a: FT_Long, b: FT_Long) -> FT_Long;
+    pub fn FT_DivFix(a: FT_Long, b: FT_Long) -> FT_Long;
+    pub fn FT_RoundFix(a: FT_Fixed) -> FT_Fixed;
+    pub fn FT_CeilFix(a: FT_Fixed) -> FT_Fixed;
+    pub fn FT_FloorFix(a: FT_Fixed) -> FT_Fixed;
 }
