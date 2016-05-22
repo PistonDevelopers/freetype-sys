@@ -280,6 +280,14 @@ pub const FT_RENDER_MODE_LCD    : FT_Render_Mode = 3;
 pub const FT_RENDER_MODE_LCD_V  : FT_Render_Mode = 4;
 pub const FT_RENDER_MODE_MAX    : FT_Render_Mode = FT_RENDER_MODE_LCD_V + 1;
 
+pub type FT_LcdFilter = c_uint;
+pub const FT_LCD_FILTER_NONE    : FT_LcdFilter = 0;
+pub const FT_LCD_FILTER_DEFAULT : FT_LcdFilter = 1;
+pub const FT_LCD_FILTER_LIGHT   : FT_LcdFilter = 3;
+pub const FT_LCD_FILTER_LEGACY1 : FT_LcdFilter = 3;
+pub const FT_LCD_FILTER_LEGACY  : FT_LcdFilter = 16;
+pub const FT_LCD_FILTER_MAX     : FT_LcdFilter = 17;
+
 pub type FT_Encoding = c_uint;
 pub const FT_ENCODING_NONE           : FT_Encoding = 0;
 pub const FT_ENCODING_MS_SYMBOL      : FT_Encoding = 1937337698;
@@ -802,6 +810,7 @@ extern "C" {
     pub fn FT_Request_Size(face: FT_Face, req: FT_Size_Request) -> FT_Error;
     pub fn FT_Set_Char_Size(face: FT_Face, char_width: FT_F26Dot6, char_height: FT_F26Dot6, horz_resolution: FT_UInt, vert_resolution: FT_UInt) -> FT_Error;
     pub fn FT_Set_Pixel_Sizes(face: FT_Face, pixel_width: FT_UInt, pixel_height: FT_UInt) -> FT_Error;
+    pub fn FT_Library_SetLcdFilter(library: FT_Library, filter: FT_LcdFilter) -> FT_Error;
     pub fn FT_Load_Glyph(face: FT_Face, glyph_index: FT_UInt, load_flags: FT_Int32) -> FT_Error;
     pub fn FT_Load_Char(face: FT_Face, char_code: FT_ULong, load_flags: FT_Int32) -> FT_Error;
     pub fn FT_Set_Transform(face: FT_Face, matrix: *mut FT_Matrix, delta: *mut FT_Vector);
