@@ -1,7 +1,7 @@
 [package]
 
 name = "freetype-sys"
-version = "0.3.1"
+version = "0.4.0"
 authors = ["Coeuvre <coeuvre@gmail.com>"]
 links = "freetype"
 build = "build.rs"
