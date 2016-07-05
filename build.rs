@@ -1,10 +1,16 @@
-extern crate pkg_config;
+extern crate cmake;
+
+use cmake::Config;
 
 fn main() {
-    match pkg_config::find_library("freetype2") {
-        Ok(_) => return,
-        Err(_) => {
-            println!("cargo:rustc-link-lib=dylib=freetype");
-        }
-    }
+    let freetype = Config::new("libfreetype")
+        .define("FREETYPE_NO_DIST", "true")
+        .define("WITH_ZLIB", "OFF")
+        .define("WITH_BZIP2", "OFF")
+        .define("WITH_PNG", "OFF")
+        .define("WITH_HARFBUZZ", "OFF")
+        .build();
+
+    println!("cargo:rustc-link-search=native={}/build", freetype.display());
+    println!("cargo:rustc-link-lib=static=freetype");
 }
