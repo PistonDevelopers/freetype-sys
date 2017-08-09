@@ -840,4 +840,6 @@ extern "C" {
     pub fn FT_RoundFix(a: FT_Fixed) -> FT_Fixed;
     pub fn FT_CeilFix(a: FT_Fixed) -> FT_Fixed;
     pub fn FT_FloorFix(a: FT_Fixed) -> FT_Fixed;
+    pub fn FT_Outline_Translate(outline: *const FT_Outline, xOffset: FT_Pos, yOffset: FT_Pos);
+    pub fn FT_Outline_Get_CBox(outline: *const FT_Outline, acbox: *mut FT_BBox);
 }
