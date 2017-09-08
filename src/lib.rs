@@ -329,6 +329,22 @@ pub const FT_GLYPH_BBOX_GRIDFIT   : FT_Glyph_BBox_Mode = 1;
 pub const FT_GLYPH_BBOX_TRUNCATE  : FT_Glyph_BBox_Mode = 2;
 pub const FT_GLYPH_BBOX_PIXELS    : FT_Glyph_BBox_Mode = 3;
 
+pub type FT_Stroker_LineJoin = c_uint;
+pub const FT_STROKER_LINEJOIN_ROUND          : FT_Stroker_LineJoin = 0;
+pub const FT_STROKER_LINEJOIN_BEVEL          : FT_Stroker_LineJoin = 1;
+pub const FT_STROKER_LINEJOIN_MITER_VARIABLE : FT_Stroker_LineJoin = 2;
+pub const FT_STROKER_LINEJOIN_MITER          : FT_Stroker_LineJoin = 2;
+pub const FT_STROKER_LINEJOIN_MITER_FIXED    : FT_Stroker_LineJoin = 3;
+
+pub type FT_Stroker_LineCap = c_uint;
+pub const FT_STROKER_LINECAP_BUTT   : FT_Stroker_LineCap = 0;
+pub const FT_STROKER_LINECAP_ROUND  : FT_Stroker_LineCap = 1;
+pub const FT_STROKER_LINECAP_SQUARE : FT_Stroker_LineCap = 2;
+
+pub type FT_StrokerBorder = c_uint;
+pub const FT_STROKER_BORDER_LEFT  : FT_StrokerBorder = 0;
+pub const FT_STROKER_BORDER_RIGHT : FT_StrokerBorder = 1;
+
 // Constants
 pub const FT_FACE_FLAG_SCALABLE         : FT_Long = 1 << 0;
 pub const FT_FACE_FLAG_FIXED_SIZES      : FT_Long = 1 << 1;
@@ -506,6 +522,7 @@ pub type FT_ListNode = *mut FT_ListNodeRec;
 pub type FT_Glyph = *mut FT_GlyphRec;
 pub type FT_BitmapGlyph = *mut FT_BitmapGlyphRec;
 pub type FT_OutlineGlyph = *mut FT_OutlineGlyphRec;
+pub type FT_Stroker = *mut FT_StrokerRec;
 pub type TT_OS2_Internal = *mut TT_OS2;
 
 // Internal Types
@@ -517,6 +534,7 @@ pub type FT_Size_InternalRec = c_void;
 pub type FT_SubGlyphRec = c_void;
 pub type FT_Slot_InternalRec = c_void;
 pub type FT_Face_InternalRec = c_void;
+pub type FT_StrokerRec = c_void;
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -834,6 +852,24 @@ extern "C" {
     pub fn FT_Glyph_Get_CBox(glyph: FT_Glyph, bbox_mode: FT_UInt, acbox: *mut FT_BBox);
     pub fn FT_Glyph_To_Bitmap(the_glyph: *mut FT_Glyph, render_mode: FT_Render_Mode, origin: *mut FT_Vector, destroy: FT_Bool) -> FT_Error;
     pub fn FT_Done_Glyph(glyph: FT_Glyph);
+    pub fn FT_Outline_GetInsideBorder(outline: *mut FT_Outline) -> FT_StrokerBorder;
+    pub fn FT_Outline_GetOutsideBorder(outline: *mut FT_Outline) -> FT_StrokerBorder;
+    pub fn FT_Glyph_Stroke(pglyph: *mut FT_Glyph, stroker: FT_Stroker, destroy: FT_Bool) -> FT_Error;
+    pub fn FT_Glyph_StrokeBorder(pglyph: *mut FT_Glyph, stroker: FT_Stroker, inside: FT_Bool, outline: FT_Bool) -> FT_Error;
+    pub fn FT_Stroker_New(library: FT_Library, stroker: *mut FT_Stroker) -> FT_Error;
+    pub fn FT_Stroker_Set(stroker: FT_Stroker, radius: FT_Fixed, line_cap: FT_Stroker_LineCap, line_join: FT_Stroker_LineJoin, miter_limit: FT_Fixed);
+    pub fn FT_Stroker_Rewind(stroker: FT_Stroker);
+    pub fn FT_Stroker_ParseOutline(stroker: FT_Stroker, outline: *mut FT_Outline, opened: FT_Bool) -> FT_Error;
+    pub fn FT_Stroker_Done(stroker: FT_Stroker);
+    pub fn FT_Stroker_BeginSubPath(stroker: FT_Stroker, to: *mut FT_Vector, open: FT_Bool) -> FT_Error;
+    pub fn FT_Stroker_EndSubPath(stroker: FT_Stroker) -> FT_Error;
+    pub fn FT_Stroker_LineTo(stroker: FT_Stroker, to: *mut FT_Vector) -> FT_Error;
+    pub fn FT_Stroker_ConicTo(stroker: FT_Stroker, control: *mut FT_Vector, to: *mut FT_Vector) -> FT_Error;
+    pub fn FT_Stroker_CubicTo(stroker: FT_Stroker, control1: *mut FT_Vector, control2: *mut FT_Vector, to: *mut FT_Vector) -> FT_Error;
+    pub fn FT_Stroker_GetBorderCounts(stroker: FT_Stroker, border: FT_StrokerBorder, anum_points: *mut FT_UInt, anum_contours: *mut FT_UInt) -> FT_Error;
+    pub fn FT_Stroker_ExportBorder(stroker: FT_Stroker, border: FT_StrokerBorder, outline: *mut FT_Outline);
+    pub fn FT_Stroker_GetCounts(stroker: FT_Stroker, anum_points: *mut FT_UInt, anum_contours: *mut FT_UInt) -> FT_Error;
+    pub fn FT_Stroker_Export(stroker: FT_Stroker, outline: *mut FT_Outline);
     pub fn FT_MulDiv(a: FT_Long, b: FT_Long, c: FT_Long) -> FT_Long;
     pub fn FT_MulFix(a: FT_Long, b: FT_Long) -> FT_Long;
     pub fn FT_DivFix(a: FT_Long, b: FT_Long) -> FT_Long;
