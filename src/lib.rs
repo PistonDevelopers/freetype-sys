@@ -67,14 +67,14 @@ impl FTErrorMethods for FT_Error {
 
 // Structs
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, Default)]
 pub struct FT_Vector {
     pub x: FT_Pos,
     pub y: FT_Pos,
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, Default)]
 pub struct FT_BBox {
     pub xMin: FT_Pos,
     pub yMin: FT_Pos,
@@ -83,7 +83,7 @@ pub struct FT_BBox {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_Matrix {
     pub xx: FT_Fixed,
     pub xy: FT_Fixed,
@@ -92,13 +92,14 @@ pub struct FT_Matrix {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_UnitVector {
     pub x: FT_F2Dot14,
     pub y: FT_F2Dot14,
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_Bitmap {
     pub rows: c_int,
@@ -112,6 +113,7 @@ pub struct FT_Bitmap {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_Data {
     pub pointer: *const FT_Byte,
@@ -119,6 +121,7 @@ pub struct FT_Data {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_Generic {
     pub data: *mut c_void,
@@ -126,7 +129,7 @@ pub struct FT_Generic {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_Size_Metrics {
     pub x_ppem: FT_UShort,
     pub y_ppem: FT_UShort,
@@ -141,6 +144,7 @@ pub struct FT_Size_Metrics {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_Outline {
     pub n_contours: c_short,
@@ -154,7 +158,7 @@ pub struct FT_Outline {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_Glyph_Metrics {
     pub width: FT_Pos,
     pub height: FT_Pos,
@@ -169,13 +173,14 @@ pub struct FT_Glyph_Metrics {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_Parameter {
     pub tag: FT_ULong,
     pub data: FT_Pointer,
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_Open_Args {
     pub flags: FT_UInt,
@@ -189,7 +194,7 @@ pub struct FT_Open_Args {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_Bitmap_Size {
     pub height: FT_Short,
     pub width: FT_Short,
@@ -201,7 +206,7 @@ pub struct FT_Bitmap_Size {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TT_OS2 {
     pub version: FT_UShort,
     pub xAvgCharWidth: FT_Short,
@@ -537,7 +542,7 @@ pub type FT_Face_InternalRec = c_void;
 pub type FT_StrokerRec = c_void;
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_CharMapRec {
     pub face: FT_Face,
     pub encoding: FT_Encoding,
@@ -546,6 +551,7 @@ pub struct FT_CharMapRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_FaceRec {
     pub num_faces: FT_Long,
@@ -599,6 +605,7 @@ pub struct FT_FaceRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_GlyphSlotRec {
     pub library: FT_Library,
@@ -635,6 +642,7 @@ pub struct FT_GlyphSlotRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 pub struct FT_SizeRec {
     pub face: FT_Face,
     pub generic: FT_Generic,
@@ -643,6 +651,7 @@ pub struct FT_SizeRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_StreamRec {
     pub base: *mut c_uchar,
@@ -660,6 +669,7 @@ pub struct FT_StreamRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_MemoryRec {
     pub user: *mut c_void,
@@ -671,13 +681,14 @@ pub struct FT_MemoryRec {
 unsafe impl Sync for FT_MemoryRec {}
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_ListRec {
     pub head: FT_ListNode,
     pub tail: FT_ListNode,
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_ListNodeRec {
     pub prev: FT_ListNode,
@@ -686,7 +697,7 @@ pub struct FT_ListNodeRec {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_Size_RequestRec {
     pub size_request_type: FT_Size_Request_Type, // type
     pub width: FT_Long,
@@ -696,6 +707,7 @@ pub struct FT_Size_RequestRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_GlyphRec {
     pub library: FT_Library,
@@ -705,6 +717,7 @@ pub struct FT_GlyphRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_BitmapGlyphRec {
     pub root: FT_GlyphRec,
@@ -714,6 +727,7 @@ pub struct FT_BitmapGlyphRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_OutlineGlyphRec {
     pub root: FT_GlyphRec,
