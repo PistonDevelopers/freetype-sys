@@ -5,8 +5,10 @@ environment:
   - RUST_CHANNEL: nightly
 install:
   - ps: Start-FileDownload "https://github.com/PistonDevelopers/binaries/raw/master/x86_64/freetype.dll"
+  - ps: Start-FileDownload "https://github.com/PistonDevelopers/binaries/raw/master/x86_64/freetype.lib"
   - mkdir C:\\freetype-x86_64-lib
   - move freetype.dll C:\\freetype-x86_64-lib
+  - move freetype.lib C:\\freetype-x86_64-lib
   - ps: Start-FileDownload "https://static.rust-lang.org/dist/rust-${env:RUST_CHANNEL}-x86_64-pc-windows-msvc.msi"
   - msiexec /passive /i "rust-%RUST_CHANNEL%-x86_64-pc-windows-msvc.msi" ADDLOCAL=Rustc,Cargo,Std INSTALLDIR=C:\Rust
   - mkdir .cargo
