@@ -1,11 +1,18 @@
 environment:
-  PATH: '%PATH%;C:\msys64\mingw64\bin;C:\Rust\bin'
+  PATH: '%PATH%;C:\Rust\bin'
   matrix:
   - RUST_CHANNEL: beta
   - RUST_CHANNEL: nightly
 install:
-  - ps: Start-FileDownload "https://static.rust-lang.org/dist/rust-${env:RUST_CHANNEL}-x86_64-pc-windows-gnu.msi"
-  - msiexec /passive /i "rust-%RUST_CHANNEL%-x86_64-pc-windows-gnu.msi" ADDLOCAL=Rustc,Cargo,Std INSTALLDIR=C:\Rust
-  - C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm mingw-w64-x86_64-freetype"
+  - ps: Start-FileDownload "https://github.com/PistonDevelopers/binaries/raw/master/x86_64/freetype.dll"
+  - mkdir C:\\freetype-x86_64-lib
+  - move freetype.dll C:\\freetype-x86_64-lib
+  - ps: Start-FileDownload "https://static.rust-lang.org/dist/rust-${env:RUST_CHANNEL}-x86_64-pc-windows-msvc.msi"
+  - msiexec /passive /i "rust-%RUST_CHANNEL%-x86_64-pc-windows-msvc.msi" ADDLOCAL=Rustc,Cargo,Std INSTALLDIR=C:\Rust
+  - mkdir .cargo
+  - echo [target.x86_64-pc-windows-msvc.freetype] >> .cargo\\config
+  - echo rustc-link-search = ["C:\\freetype-x86_64-lib"] >> .cargo\\config
+  - echo rustc-link-lib = ["freetype"] >> .cargo\\config
+  - type .cargo\\config
 build_script:
   - cargo test
