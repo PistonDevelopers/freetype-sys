@@ -55,6 +55,14 @@ pub type FT_Stream_CloseFunc = extern fn(FT_Stream);
 pub type FT_Alloc_Func = extern fn(FT_Memory, c_long) -> *mut c_void;
 pub type FT_Free_Func = extern fn(FT_Memory, *mut c_void);
 pub type FT_Realloc_Func = extern fn(FT_Memory, c_long, c_long, *mut c_void) -> *mut c_void;
+pub type FT_Outline_MoveToFunc = extern fn(to: *const FT_Vector, user: *mut c_void) -> c_int;
+pub type FT_Outline_LineToFunc = extern fn(to: *const FT_Vector, user: *mut c_void) -> c_int;
+pub type FT_Outline_ConicToFunc = extern fn(control: *const FT_Vector, to: *const FT_Vector, user: *mut c_void) -> c_int;
+pub type FT_Outline_CubicToFunc = extern fn(control1: *const FT_Vector, control2: *const FT_Vector, to: *const FT_Vector, user: *mut c_void) -> c_int;
+pub type FT_SpanFunc = extern fn(y: c_int, count: c_int, spans: *const FT_Span, user: *mut c_void);
+pub type FT_Raster_BitTest_Func = extern fn(y: c_int, x: c_int, user: *mut c_void) -> c_int;
+pub type FT_Raster_BitSet_Func = extern fn(y: c_int, x: c_int, user: *mut c_void);
+
 
 pub trait FTErrorMethods {
     fn succeeded(&self) -> bool;
@@ -67,14 +75,14 @@ impl FTErrorMethods for FT_Error {
 
 // Structs
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, Default)]
 pub struct FT_Vector {
     pub x: FT_Pos,
     pub y: FT_Pos,
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, Default)]
 pub struct FT_BBox {
     pub xMin: FT_Pos,
     pub yMin: FT_Pos,
@@ -83,7 +91,7 @@ pub struct FT_BBox {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_Matrix {
     pub xx: FT_Fixed,
     pub xy: FT_Fixed,
@@ -92,13 +100,14 @@ pub struct FT_Matrix {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_UnitVector {
     pub x: FT_F2Dot14,
     pub y: FT_F2Dot14,
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_Bitmap {
     pub rows: c_int,
@@ -112,6 +121,7 @@ pub struct FT_Bitmap {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_Data {
     pub pointer: *const FT_Byte,
@@ -119,6 +129,7 @@ pub struct FT_Data {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_Generic {
     pub data: *mut c_void,
@@ -126,7 +137,7 @@ pub struct FT_Generic {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_Size_Metrics {
     pub x_ppem: FT_UShort,
     pub y_ppem: FT_UShort,
@@ -141,6 +152,7 @@ pub struct FT_Size_Metrics {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_Outline {
     pub n_contours: c_short,
@@ -154,7 +166,7 @@ pub struct FT_Outline {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_Glyph_Metrics {
     pub width: FT_Pos,
     pub height: FT_Pos,
@@ -169,13 +181,14 @@ pub struct FT_Glyph_Metrics {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_Parameter {
     pub tag: FT_ULong,
     pub data: FT_Pointer,
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_Open_Args {
     pub flags: FT_UInt,
@@ -189,7 +202,7 @@ pub struct FT_Open_Args {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_Bitmap_Size {
     pub height: FT_Short,
     pub width: FT_Short,
@@ -201,7 +214,7 @@ pub struct FT_Bitmap_Size {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TT_OS2 {
     pub version: FT_UShort,
     pub xAvgCharWidth: FT_Short,
@@ -240,6 +253,15 @@ pub struct TT_OS2 {
     pub usBreakChar: FT_UShort,
     pub usMaxContext: FT_UShort,
 }
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct FT_Span {
+    pub x: c_short,
+    pub len: c_ushort,
+    pub coverage: c_uchar,
+}
+
 
 // Enums
 
@@ -345,6 +367,14 @@ pub type FT_StrokerBorder = c_uint;
 pub const FT_STROKER_BORDER_LEFT  : FT_StrokerBorder = 0;
 pub const FT_STROKER_BORDER_RIGHT : FT_StrokerBorder = 1;
 
+pub type FT_Orientation = c_uint;
+pub const FT_ORIENTATION_TRUETYPE   : FT_Orientation = 0;
+pub const FT_ORIENTATION_POSTSCRIPT : FT_Orientation = 1;
+pub const FT_ORIENTATION_NONE       : FT_Orientation = 2;
+pub const FT_ORIENTATION_FILL_RIGHT : FT_Orientation = FT_ORIENTATION_TRUETYPE;
+pub const FT_ORIENTATION_FILL_LEFT  : FT_Orientation = FT_ORIENTATION_POSTSCRIPT;
+
+
 // Constants
 pub const FT_FACE_FLAG_SCALABLE         : FT_Long = 1 << 0;
 pub const FT_FACE_FLAG_FIXED_SIZES      : FT_Long = 1 << 1;
@@ -409,6 +439,16 @@ pub const FT_FSTYPE_PREVIEW_AND_PRINT_EMBEDDING  : FT_UShort = 0x0004;
 pub const FT_FSTYPE_EDITABLE_EMBEDDING           : FT_UShort = 0x0008;
 pub const FT_FSTYPE_NO_SUBSETTING                : FT_UShort = 0x0100;
 pub const FT_FSTYPE_BITMAP_EMBEDDING_ONLY        : FT_UShort = 0x0200;
+
+pub const FT_OUTLINE_NONE            : c_int = 0x0;
+pub const FT_OUTLINE_OWNER           : c_int = 0x1;
+pub const FT_OUTLINE_EVEN_ODD_FILL   : c_int = 0x2;
+pub const FT_OUTLINE_REVERSE_FILL    : c_int = 0x4;
+pub const FT_OUTLINE_IGNORE_DROPOUTS : c_int = 0x8;
+pub const FT_OUTLINE_SMART_DROPOUTS  : c_int = 0x10;
+pub const FT_OUTLINE_INCLUDE_STUBS   : c_int = 0x20;
+pub const FT_OUTLINE_HIGH_PRECISION  : c_int = 0x100;
+pub const FT_OUTLINE_SINGLE_PASS     : c_int = 0x200;
 
 pub const FT_Err_Ok                            : FT_Error = 0;
 pub const FT_Err_Cannot_Open_Resource          : FT_Error = 1;
@@ -537,7 +577,7 @@ pub type FT_Face_InternalRec = c_void;
 pub type FT_StrokerRec = c_void;
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_CharMapRec {
     pub face: FT_Face,
     pub encoding: FT_Encoding,
@@ -546,6 +586,7 @@ pub struct FT_CharMapRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_FaceRec {
     pub num_faces: FT_Long,
@@ -599,6 +640,7 @@ pub struct FT_FaceRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_GlyphSlotRec {
     pub library: FT_Library,
@@ -635,6 +677,7 @@ pub struct FT_GlyphSlotRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 pub struct FT_SizeRec {
     pub face: FT_Face,
     pub generic: FT_Generic,
@@ -643,6 +686,7 @@ pub struct FT_SizeRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_StreamRec {
     pub base: *mut c_uchar,
@@ -660,6 +704,7 @@ pub struct FT_StreamRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_MemoryRec {
     pub user: *mut c_void,
@@ -671,13 +716,14 @@ pub struct FT_MemoryRec {
 unsafe impl Sync for FT_MemoryRec {}
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_ListRec {
     pub head: FT_ListNode,
     pub tail: FT_ListNode,
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_ListNodeRec {
     pub prev: FT_ListNode,
@@ -686,7 +732,7 @@ pub struct FT_ListNodeRec {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_Size_RequestRec {
     pub size_request_type: FT_Size_Request_Type, // type
     pub width: FT_Long,
@@ -696,6 +742,7 @@ pub struct FT_Size_RequestRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_GlyphRec {
     pub library: FT_Library,
@@ -705,6 +752,7 @@ pub struct FT_GlyphRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_BitmapGlyphRec {
     pub root: FT_GlyphRec,
@@ -714,11 +762,40 @@ pub struct FT_BitmapGlyphRec {
 }
 
 #[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 pub struct FT_OutlineGlyphRec {
     pub root: FT_GlyphRec,
     pub outline: FT_Outline,
 }
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct FT_Outline_Funcs {
+    pub move_to: FT_Outline_MoveToFunc,
+    pub line_to: FT_Outline_LineToFunc,
+    pub conic_to: FT_Outline_ConicToFunc,
+    pub cubic_to: FT_Outline_CubicToFunc,
+    pub shift: c_int,
+    pub delta: FT_Pos,
+}
+
+#[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
+#[allow(missing_copy_implementations)]
+pub struct FT_Raster_Params {
+    pub target: *const FT_Bitmap,
+    pub source: *const c_void,
+    pub flags: c_int,
+    pub gray_spans: FT_SpanFunc,
+    pub black_spans: FT_SpanFunc,
+    pub bit_test: FT_Raster_BitTest_Func,
+    pub bit_set: FT_Raster_BitSet_Func,
+    pub user: *mut c_void,
+    pub clip_box: FT_BBox,
+}
+
+
 
 // Macro functions
 #[inline(always)]
@@ -876,6 +953,25 @@ extern "C" {
     pub fn FT_RoundFix(a: FT_Fixed) -> FT_Fixed;
     pub fn FT_CeilFix(a: FT_Fixed) -> FT_Fixed;
     pub fn FT_FloorFix(a: FT_Fixed) -> FT_Fixed;
+
+    pub fn FT_Outline_New(library: FT_Library, num_points: FT_UInt, num_contours: FT_Int, anoutline: *mut FT_Outline) -> FT_Error;
+    pub fn FT_Outline_New_Internal(memory: FT_Memory, num_points: FT_UInt, num_contours: FT_Int, anoutline: *mut FT_Outline) -> FT_Error;
+    pub fn FT_Outline_Done(library: FT_Library, outline: *mut FT_Outline) -> FT_Error;
+    pub fn FT_Outline_Done_Internal(memory: FT_Memory, outline: *mut FT_Outline) -> FT_Error;
+    pub fn FT_Outline_Copy(source: *const FT_Outline, target: *mut FT_Outline) -> FT_Error;
     pub fn FT_Outline_Translate(outline: *const FT_Outline, xOffset: FT_Pos, yOffset: FT_Pos);
+    pub fn FT_Outline_Transform(outline: *const FT_Outline, matrix: *const FT_Matrix);
+    pub fn FT_Outline_Embolden(outline: *mut FT_Outline, strength: FT_Pos) -> FT_Error;
+    pub fn FT_Outline_EmboldenXY(outline: *mut FT_Outline, xstrength: FT_Pos, ystrength: FT_Pos) -> FT_Error;
+    pub fn FT_Outline_Reverse(outline: *mut FT_Outline);
+    pub fn FT_Outline_Check(outline: *mut FT_Outline) -> FT_Error;
+
     pub fn FT_Outline_Get_CBox(outline: *const FT_Outline, acbox: *mut FT_BBox);
+    pub fn FT_Outline_Get_BBox(outline: *const FT_Outline, abbox: *mut FT_BBox) -> FT_Error;
+
+    pub fn FT_Outline_Get_Bitmap(library: FT_Library, outline: *mut FT_Outline, abitmap: *const FT_Bitmap) -> FT_Error;
+    pub fn FT_Outline_Render(library: FT_Library, outline: *mut FT_Outline, params: *mut FT_Raster_Params) -> FT_Error;
+    pub fn FT_Outline_Decompose(outline: *mut FT_Outline, func_interface: *const FT_Outline_Funcs, user: *mut c_void) -> FT_Error;
+
+    pub fn FT_Outline_Get_Orientation(outline: *mut FT_Outline) -> FT_Orientation;
 }
