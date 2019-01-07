@@ -882,7 +882,6 @@ pub fn FT_HAS_COLOR(face: FT_Face) -> bool {
     }
 }
 
-#[cfg(any(target_os = "linux", target_os = "macos"))]
 extern {
     pub fn FT_Get_Sfnt_Table(face: FT_Face, tag: FT_Sfnt_Tag) -> *mut c_void;
 }
