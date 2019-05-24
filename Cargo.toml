@@ -12,8 +12,14 @@ readme = "README.md"
 repository = "https://github.com/PistonDevelopers/freetype-sys.git"
 homepage = "https://github.com/PistonDevelopers/freetype-sys"
 
+[features]
+default = ["link-freetype"]
+
+# Automatically try to link in the Freetype library.
+link-freetype = ["pkg-config"]
+
 [build-dependencies]
-pkg-config = "0.3.11"
+pkg-config = { version = "0.3.11", optional = true }
 
 [dependencies]
 libz-sys = "1.0.18"
