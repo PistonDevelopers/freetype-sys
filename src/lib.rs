@@ -256,6 +256,23 @@ pub struct TT_OS2 {
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct TT_Postscript {
+  pub formatType: FT_Fixed,
+  pub italicAngle: FT_Fixed,
+  pub underlinePosition: FT_Short,
+  pub underlineThickness: FT_Short,
+  pub isFixedPitch: FT_ULong,
+  pub minMemType42: FT_ULong,
+  pub maxMemType42: FT_ULong,
+  pub minMemType1: FT_ULong,
+  pub maxMemType1: FT_ULong,
+
+  /* Glyph names follow in the 'post' table, but we don't */
+  /* load them by default.                                */
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct FT_Span {
     pub x: c_short,
     pub len: c_ushort,
@@ -564,6 +581,7 @@ pub type FT_BitmapGlyph = *mut FT_BitmapGlyphRec;
 pub type FT_OutlineGlyph = *mut FT_OutlineGlyphRec;
 pub type FT_Stroker = *mut FT_StrokerRec;
 pub type TT_OS2_Internal = *mut TT_OS2;
+pub type TT_Postscript_Internal = *mut TT_Postscript;
 
 // Internal Types
 pub type FT_LibraryRec = c_void;
