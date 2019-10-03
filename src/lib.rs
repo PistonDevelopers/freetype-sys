@@ -220,7 +220,7 @@ pub struct TT_OS2 {
     pub xAvgCharWidth: FT_Short,
     pub usWeightClass: FT_UShort,
     pub usWidthClass: FT_UShort,
-    pub fsType: FT_Short,
+    pub fsType: FT_UShort,
     pub ySubscriptXSize: FT_Short,
     pub ySubscriptYSize: FT_Short,
     pub ySubscriptXOffset: FT_Short,
@@ -239,6 +239,17 @@ pub struct TT_OS2 {
     pub ulUnicodeRange2: FT_ULong, /* Bits 32-63  */
     pub ulUnicodeRange3: FT_ULong, /* Bits 64-95  */
     pub ulUnicodeRange4: FT_ULong, /* Bits 96-127 */
+
+    pub achVendID: [FT_Char; 4],
+
+    pub fsSelection: FT_UShort,
+    pub usFirstCharIndex: FT_UShort,
+    pub usLastCharIndex: FT_UShort,
+    pub sTypoAscender: FT_Short,
+    pub sTypoDescender: FT_Short,
+    pub sTypoLineGap: FT_Short,
+    pub usWinAscent: FT_UShort,
+    pub usWinDescent: FT_UShort,
 
     /* only version 1 tables */
 
