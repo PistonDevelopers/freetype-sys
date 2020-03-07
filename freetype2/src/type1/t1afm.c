@@ -1,19 +1,19 @@
-/****************************************************************************
- *
- * t1afm.c
- *
- *   AFM support for Type 1 fonts (body).
- *
- * Copyright (C) 1996-2019 by
- * David Turner, Robert Wilhelm, and Werner Lemberg.
- *
- * This file is part of the FreeType project, and may only be used,
- * modified, and distributed under the terms of the FreeType project
- * license, LICENSE.TXT.  By continuing to use, modify, or distribute
- * this file you indicate that you have read the license and
- * understand and accept it fully.
- *
- */
+/***************************************************************************/
+/*                                                                         */
+/*  t1afm.c                                                                */
+/*                                                                         */
+/*    AFM support for Type 1 fonts (body).                                 */
+/*                                                                         */
+/*  Copyright 1996-2016 by                                                 */
+/*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
+/*                                                                         */
+/*  This file is part of the FreeType project, and may only be used,       */
+/*  modified, and distributed under the terms of the FreeType project      */
+/*  license, LICENSE.TXT.  By continuing to use, modify, or distribute     */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
 
 #include <ft2build.h>
@@ -24,16 +24,14 @@
 #include "t1errors.h"
 
 
-#ifndef T1_CONFIG_OPTION_NO_AFM
-
-  /**************************************************************************
-   *
-   * The macro FT_COMPONENT is used in trace mode.  It is an implicit
-   * parameter of the FT_TRACE() and FT_ERROR() macros, used to print/log
-   * messages during execution.
-   */
+  /*************************************************************************/
+  /*                                                                       */
+  /* The macro FT_COMPONENT is used in trace mode.  It is an implicit      */
+  /* parameter of the FT_TRACE() and FT_ERROR() macros, used to print/log  */
+  /* messages during execution.                                            */
+  /*                                                                       */
 #undef  FT_COMPONENT
-#define FT_COMPONENT  t1afm
+#define FT_COMPONENT  trace_t1afm
 
 
   FT_LOCAL_DEF( void )
@@ -210,7 +208,7 @@
       kp++;
     }
 
-    if ( oldcharmap )
+    if ( oldcharmap != NULL )
       error = FT_Set_Charmap( t1_face, oldcharmap );
     if ( error )
       goto Exit;
@@ -311,14 +309,14 @@
       {
         t1_face->face_flags |= FT_FACE_FLAG_KERNING;
         face->afm_data       = fi;
-        fi                   = NULL;
+        fi = NULL;
       }
     }
 
     FT_FRAME_EXIT();
 
   Exit:
-    if ( fi )
+    if ( fi != NULL )
       T1_Done_Metrics( memory, fi );
 
     return error;
@@ -403,13 +401,6 @@
 
     return FT_Err_Ok;
   }
-
-#else /* T1_CONFIG_OPTION_NO_AFM */
-
-  /* ANSI C doesn't like empty source files */
-  typedef int  _t1_afm_dummy;
-
-#endif /* T1_CONFIG_OPTION_NO_AFM */
 
 
 /* END */

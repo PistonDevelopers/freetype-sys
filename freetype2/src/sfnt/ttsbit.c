@@ -1,22 +1,22 @@
-/****************************************************************************
- *
- * ttsbit.c
- *
- *   TrueType and OpenType embedded bitmap support (body).
- *
- * Copyright (C) 2005-2019 by
- * David Turner, Robert Wilhelm, and Werner Lemberg.
- *
- * Copyright 2013 by Google, Inc.
- * Google Author(s): Behdad Esfahbod.
- *
- * This file is part of the FreeType project, and may only be used,
- * modified, and distributed under the terms of the FreeType project
- * license, LICENSE.TXT.  By continuing to use, modify, or distribute
- * this file you indicate that you have read the license and
- * understand and accept it fully.
- *
- */
+/***************************************************************************/
+/*                                                                         */
+/*  ttsbit.c                                                               */
+/*                                                                         */
+/*    TrueType and OpenType embedded bitmap support (body).                */
+/*                                                                         */
+/*  Copyright 2005-2016 by                                                 */
+/*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
+/*                                                                         */
+/*  Copyright 2013 by Google, Inc.                                         */
+/*  Google Author(s): Behdad Esfahbod.                                     */
+/*                                                                         */
+/*  This file is part of the FreeType project, and may only be used,       */
+/*  modified, and distributed under the terms of the FreeType project      */
+/*  license, LICENSE.TXT.  By continuing to use, modify, or distribute     */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
 
 #include <ft2build.h>
@@ -24,10 +24,6 @@
 #include FT_INTERNAL_STREAM_H
 #include FT_TRUETYPE_TAGS_H
 #include FT_BITMAP_H
-
-
-#ifdef TT_CONFIG_OPTION_EMBEDDED_BITMAPS
-
 #include "ttsbit.h"
 
 #include "sferrors.h"
@@ -36,14 +32,14 @@
 #include "pngshim.h"
 
 
-  /**************************************************************************
-   *
-   * The macro FT_COMPONENT is used in trace mode.  It is an implicit
-   * parameter of the FT_TRACE() and FT_ERROR() macros, used to print/log
-   * messages during execution.
-   */
+  /*************************************************************************/
+  /*                                                                       */
+  /* The macro FT_COMPONENT is used in trace mode.  It is an implicit      */
+  /* parameter of the FT_TRACE() and FT_ERROR() macros, used to print/log  */
+  /* messages during execution.                                            */
+  /*                                                                       */
 #undef  FT_COMPONENT
-#define FT_COMPONENT  ttsbit
+#define FT_COMPONENT  trace_ttsbit
 
 
   FT_LOCAL_DEF( FT_Error )
@@ -52,7 +48,6 @@
   {
     FT_Error  error;
     FT_ULong  table_size;
-    FT_ULong  table_start;
 
 
     face->sbit_table       = NULL;
@@ -88,8 +83,6 @@
       goto Exit;
     }
 
-    table_start = FT_STREAM_POS();
-
     switch ( (FT_UInt)face->sbit_table_type )
     {
     case TT_SBIT_TABLE_TYPE_EBLC:
@@ -111,12 +104,8 @@
         version     = FT_NEXT_LONG( p );
         num_strikes = FT_NEXT_ULONG( p );
 
-        /* there's at least one font (FZShuSong-Z01, version 3)   */
-        /* that uses the wrong byte order for the `version' field */
         if ( ( (FT_ULong)version & 0xFFFF0000UL ) != 0x00020000UL &&
-             ( (FT_ULong)version & 0x0000FFFFUL ) != 0x00000200UL &&
-             ( (FT_ULong)version & 0xFFFF0000UL ) != 0x00030000UL &&
-             ( (FT_ULong)version & 0x0000FFFFUL ) != 0x00000300UL )
+             ( (FT_ULong)version & 0xFFFF0000UL ) != 0x00030000UL )
         {
           error = FT_THROW( Unknown_File_Format );
           goto Exit;
@@ -129,8 +118,8 @@
         }
 
         /*
-         * Count the number of strikes available in the table.  We are a bit
-         * paranoid there and don't trust the data.
+         *  Count the number of strikes available in the table.  We are a bit
+         *  paranoid there and don't trust the data.
          */
         count = (FT_UInt)num_strikes;
         if ( 8 + 48UL * count > table_size )
@@ -182,8 +171,8 @@
                       " expect bad rendering results\n" ));
 
         /*
-         * Count the number of strikes available in the table.  We are a bit
-         * paranoid there and don't trust the data.
+         *  Count the number of strikes available in the table.  We are a bit
+         *  paranoid there and don't trust the data.
          */
         count = (FT_UInt)num_strikes;
         if ( 8 + 4UL * count > table_size )
@@ -201,51 +190,12 @@
       break;
 
     default:
-      /* we ignore unknown table formats */
       error = FT_THROW( Unknown_File_Format );
       break;
     }
 
     if ( !error )
-      FT_TRACE3(( "tt_face_load_sbit_strikes: found %u strikes\n",
-                  face->sbit_num_strikes ));
-
-    face->ebdt_start = 0;
-    face->ebdt_size  = 0;
-
-    if ( face->sbit_table_type == TT_SBIT_TABLE_TYPE_SBIX )
-    {
-      /* the `sbix' table is self-contained; */
-      /* it has no associated data table     */
-      face->ebdt_start = table_start;
-      face->ebdt_size  = table_size;
-    }
-    else if ( face->sbit_table_type != TT_SBIT_TABLE_TYPE_NONE )
-    {
-      FT_ULong  ebdt_size;
-
-
-      error = face->goto_table( face, TTAG_CBDT, stream, &ebdt_size );
-      if ( error )
-        error = face->goto_table( face, TTAG_EBDT, stream, &ebdt_size );
-      if ( error )
-        error = face->goto_table( face, TTAG_bdat, stream, &ebdt_size );
-
-      if ( !error )
-      {
-        face->ebdt_start = FT_STREAM_POS();
-        face->ebdt_size  = ebdt_size;
-      }
-    }
-
-    if ( !face->ebdt_size )
-    {
-      FT_TRACE2(( "tt_face_load_sbit_strikes:"
-                  " no embedded bitmap data table found;\n"
-                  "                          "
-                  " resetting number of strikes to zero\n" ));
-      face->sbit_num_strikes = 0;
-    }
+      FT_TRACE3(( "sbit_num_strikes: %u\n", face->sbit_num_strikes ));
 
     return FT_Err_Ok;
 
@@ -289,22 +239,8 @@
                                FT_ULong          strike_index,
                                FT_Size_Metrics*  metrics )
   {
-    /* we have to test for the existence of `sbit_strike_map'    */
-    /* because the function gets also used at the very beginning */
-    /* to construct `sbit_strike_map' itself                     */
-    if ( face->sbit_strike_map )
-    {
-      if ( strike_index >= (FT_ULong)face->root.num_fixed_sizes )
-        return FT_THROW( Invalid_Argument );
-
-      /* map to real index */
-      strike_index = face->sbit_strike_map[strike_index];
-    }
-    else
-    {
-      if ( strike_index >= (FT_ULong)face->sbit_num_strikes )
-        return FT_THROW( Invalid_Argument );
-    }
+    if ( strike_index >= (FT_ULong)face->sbit_num_strikes )
+      return FT_THROW( Invalid_Argument );
 
     switch ( (FT_UInt)face->sbit_table_type )
     {
@@ -348,8 +284,7 @@
             FT_TRACE2(( "tt_face_load_strike_metrics:"
                         " sanitizing invalid ascender and descender\n"
                         "                            "
-                        " values for strike %d (%dppem, %dppem)\n",
-                        strike_index,
+                        " values for strike (%d, %d)\n",
                         metrics->x_ppem, metrics->y_ppem ));
 
             /* sanitize buggy ascender and descender values */
@@ -388,16 +323,6 @@
                                           strike[18] + /* max_width      */
                                  (FT_Char)strike[23]   /* min_advance_SB */
                                                      ) * 64;
-
-        /* set the scale values (in 16.16 units) so advances */
-        /* from the hmtx and vmtx table are scaled correctly */
-        metrics->x_scale = FT_MulDiv( metrics->x_ppem,
-                                      64 * 0x10000,
-                                      face->header.Units_Per_EM );
-        metrics->y_scale = FT_MulDiv( metrics->y_ppem,
-                                      64 * 0x10000,
-                                      face->header.Units_Per_EM );
-
         return FT_Err_Ok;
       }
 
@@ -407,6 +332,7 @@
         FT_UInt         offset;
         FT_UShort       upem, ppem, resolution;
         TT_HoriHeader  *hori;
+        FT_ULong        table_size;
         FT_Pos          ppem_; /* to reduce casts */
 
         FT_Error  error;
@@ -416,11 +342,15 @@
         p      = face->sbit_table + 8 + 4 * strike_index;
         offset = FT_NEXT_ULONG( p );
 
-        if ( offset + 4 > face->ebdt_size )
+        error = face->goto_table( face, TTAG_sbix, stream, &table_size );
+        if ( error )
+          return error;
+
+        if ( offset + 4  > table_size )
           return FT_THROW( Invalid_File_Format );
 
-        if ( FT_STREAM_SEEK( face->ebdt_start + offset ) ||
-             FT_FRAME_ENTER( 4 )                         )
+        if ( FT_STREAM_SEEK( FT_STREAM_POS() + offset ) ||
+             FT_FRAME_ENTER( 4 )                        )
           return error;
 
         ppem       = FT_GET_USHORT();
@@ -447,15 +377,6 @@
                      ppem_ * 64, upem );
         metrics->max_advance =
           FT_MulDiv( hori->advance_Width_Max, ppem_ * 64, upem );
-
-        /* set the scale values (in 16.16 units) so advances */
-        /* from the hmtx and vmtx table are scaled correctly */
-        metrics->x_scale = FT_MulDiv( metrics->x_ppem,
-                                      64 * 0x10000,
-                                      face->header.Units_Per_EM );
-        metrics->y_scale = FT_MulDiv( metrics->y_ppem,
-                                      64 * 0x10000,
-                                      face->header.Units_Per_EM );
 
         return error;
       }
@@ -493,15 +414,17 @@
                         FT_ULong             strike_index,
                         TT_SBit_MetricsRec*  metrics )
   {
-    FT_Error   error  = FT_ERR( Table_Missing );
+    FT_Error   error;
     FT_Stream  stream = face->root.stream;
+    FT_ULong   ebdt_size;
 
 
-    strike_index = face->sbit_strike_map[strike_index];
-
-    if ( !face->ebdt_size )
-      goto Exit;
-    if ( FT_STREAM_SEEK( face->ebdt_start ) )
+    error = face->goto_table( face, TTAG_CBDT, stream, &ebdt_size );
+    if ( error )
+      error = face->goto_table( face, TTAG_EBDT, stream, &ebdt_size );
+    if ( error )
+      error = face->goto_table( face, TTAG_bdat, stream, &ebdt_size );
+    if ( error )
       goto Exit;
 
     decoder->face    = face;
@@ -512,8 +435,8 @@
     decoder->metrics_loaded   = 0;
     decoder->bitmap_allocated = 0;
 
-    decoder->ebdt_start = face->ebdt_start;
-    decoder->ebdt_size  = face->ebdt_size;
+    decoder->ebdt_start = FT_STREAM_POS();
+    decoder->ebdt_size  = ebdt_size;
 
     decoder->eblc_base  = face->sbit_table;
     decoder->eblc_limit = face->sbit_table + face->sbit_table_size;
@@ -558,8 +481,7 @@
 
 
   static FT_Error
-  tt_sbit_decoder_alloc_bitmap( TT_SBitDecoder  decoder,
-                                FT_Bool         metrics_only )
+  tt_sbit_decoder_alloc_bitmap( TT_SBitDecoder  decoder )
   {
     FT_Error    error = FT_Err_Ok;
     FT_UInt     width, height;
@@ -621,9 +543,6 @@
     /* check that there is no empty image */
     if ( size == 0 )
       goto Exit;     /* exit successfully! */
-
-    if ( metrics_only )
-      goto Exit;     /* only metrics are requested */
 
     error = ft_glyphslot_alloc_bitmap( decoder->face->root.glyph, size );
     if ( error )
@@ -691,8 +610,7 @@
                               FT_UInt         glyph_index,
                               FT_Int          x_pos,
                               FT_Int          y_pos,
-                              FT_UInt         recurse_count,
-                              FT_Bool         metrics_only );
+                              FT_UInt         recurse_count );
 
   typedef FT_Error  (*TT_SBitDecoder_LoadFunc)(
                       TT_SBitDecoder  decoder,
@@ -936,7 +854,7 @@
         }
 
         *pwrite++ |= ( ( rval >> nbits ) & 0xFF ) &
-                     ( ~( 0xFFU << w ) << ( 8 - w - x_pos ) );
+                     ( ~( 0xFF << w ) << ( 8 - w - x_pos ) );
         rval     <<= 8;
 
         w = line_bits - w;
@@ -1007,15 +925,14 @@
       goto Fail;
     }
 
-    FT_TRACE3(( "tt_sbit_decoder_load_compound: loading %d component%s\n",
-                num_components,
-                num_components == 1 ? "" : "s" ));
+    FT_TRACE3(( "tt_sbit_decoder_load_compound: loading %d components\n",
+                num_components ));
 
     for ( nn = 0; nn < num_components; nn++ )
     {
       FT_UInt  gindex = FT_NEXT_USHORT( p );
-      FT_Char  dx     = FT_NEXT_CHAR( p );
-      FT_Char  dy     = FT_NEXT_CHAR( p );
+      FT_Byte  dx     = FT_NEXT_BYTE( p );
+      FT_Byte  dy     = FT_NEXT_BYTE( p );
 
 
       /* NB: a recursive call */
@@ -1023,9 +940,7 @@
                                           gindex,
                                           x_pos + dx,
                                           y_pos + dy,
-                                          recurse_count + 1,
-                                          /* request full bitmap image */
-                                          FALSE );
+                                          recurse_count + 1 );
       if ( error )
         break;
     }
@@ -1089,7 +1004,6 @@
                            decoder->stream->memory,
                            p,
                            png_len,
-                           FALSE,
                            FALSE );
 
   Exit:
@@ -1108,8 +1022,7 @@
                                FT_ULong        glyph_size,
                                FT_Int          x_pos,
                                FT_Int          y_pos,
-                               FT_UInt         recurse_count,
-                               FT_Bool         metrics_only )
+                               FT_UInt         recurse_count )
   {
     FT_Error   error;
     FT_Stream  stream = decoder->stream;
@@ -1231,14 +1144,10 @@
 
       if ( !decoder->bitmap_allocated )
       {
-        error = tt_sbit_decoder_alloc_bitmap( decoder, metrics_only );
-
+        error = tt_sbit_decoder_alloc_bitmap( decoder );
         if ( error )
           goto Fail;
       }
-
-      if ( metrics_only )
-        goto Fail; /* this is not an error */
 
       error = loader( decoder, p, p_limit, x_pos, y_pos, recurse_count );
     }
@@ -1256,8 +1165,7 @@
                               FT_UInt         glyph_index,
                               FT_Int          x_pos,
                               FT_Int          y_pos,
-                              FT_UInt         recurse_count,
-                              FT_Bool         metrics_only )
+                              FT_UInt         recurse_count )
   {
     FT_Byte*  p          = decoder->eblc_base + decoder->strike_index_array;
     FT_Byte*  p_limit    = decoder->eblc_limit;
@@ -1442,24 +1350,16 @@
                                         image_end,
                                         x_pos,
                                         y_pos,
-                                        recurse_count,
-                                        metrics_only );
+                                        recurse_count );
 
   Failure:
     return FT_THROW( Invalid_Table );
 
   NoBitmap:
-    if ( recurse_count )
-    {
-      FT_TRACE4(( "tt_sbit_decoder_load_image:"
-                  " missing subglyph sbit with glyph index %d\n",
-                  glyph_index ));
-      return FT_THROW( Invalid_Composite );
-    }
-
     FT_TRACE4(( "tt_sbit_decoder_load_image:"
                 " no sbit found for glyph index %d\n", glyph_index ));
-    return FT_THROW( Missing_Bitmap );
+
+    return FT_THROW( Invalid_Argument );
   }
 
 
@@ -1469,10 +1369,10 @@
                            FT_UInt              glyph_index,
                            FT_Stream            stream,
                            FT_Bitmap           *map,
-                           TT_SBit_MetricsRec  *metrics,
-                           FT_Bool              metrics_only )
+                           TT_SBit_MetricsRec  *metrics )
   {
-    FT_UInt   strike_offset, glyph_start, glyph_end;
+    FT_UInt   sbix_pos, strike_offset, glyph_start, glyph_end;
+    FT_ULong  table_size;
     FT_Int    originOffsetX, originOffsetY;
     FT_Tag    graphicType;
     FT_Int    recurse_depth = 0;
@@ -1481,12 +1381,7 @@
     FT_Byte*  p;
 
     FT_UNUSED( map );
-#ifndef FT_CONFIG_OPTION_USE_PNG
-    FT_UNUSED( metrics_only );
-#endif
 
-
-    strike_index = face->sbit_strike_map[strike_index];
 
     metrics->width  = 0;
     metrics->height = 0;
@@ -1494,18 +1389,21 @@
     p = face->sbit_table + 8 + 4 * strike_index;
     strike_offset = FT_NEXT_ULONG( p );
 
+    error = face->goto_table( face, TTAG_sbix, stream, &table_size );
+    if ( error )
+      return error;
+    sbix_pos = FT_STREAM_POS();
+
   retry:
     if ( glyph_index > (FT_UInt)face->root.num_glyphs )
       return FT_THROW( Invalid_Argument );
 
-    if ( strike_offset >= face->ebdt_size                          ||
-         face->ebdt_size - strike_offset < 4 + glyph_index * 4 + 8 )
+    if ( strike_offset >= table_size                          ||
+         table_size - strike_offset < 4 + glyph_index * 4 + 8 )
       return FT_THROW( Invalid_File_Format );
 
-    if ( FT_STREAM_SEEK( face->ebdt_start  +
-                         strike_offset + 4 +
-                         glyph_index * 4   ) ||
-         FT_FRAME_ENTER( 8 )                 )
+    if ( FT_STREAM_SEEK( sbix_pos + strike_offset + 4 + glyph_index * 4 ) ||
+         FT_FRAME_ENTER( 8 )                                              )
       return error;
 
     glyph_start = FT_GET_ULONG();
@@ -1514,14 +1412,14 @@
     FT_FRAME_EXIT();
 
     if ( glyph_start == glyph_end )
-      return FT_THROW( Missing_Bitmap );
-    if ( glyph_start > glyph_end                     ||
-         glyph_end - glyph_start < 8                 ||
-         face->ebdt_size - strike_offset < glyph_end )
+      return FT_THROW( Invalid_Argument );
+    if ( glyph_start > glyph_end                ||
+         glyph_end - glyph_start < 8            ||
+         table_size - strike_offset < glyph_end )
       return FT_THROW( Invalid_File_Format );
 
-    if ( FT_STREAM_SEEK( face->ebdt_start + strike_offset + glyph_start ) ||
-         FT_FRAME_ENTER( glyph_end - glyph_start )                        )
+    if ( FT_STREAM_SEEK( sbix_pos + strike_offset + glyph_start ) ||
+         FT_FRAME_ENTER( glyph_end - glyph_start )                )
       return error;
 
     originOffsetX = FT_GET_SHORT();
@@ -1552,8 +1450,7 @@
                              stream->memory,
                              stream->cursor,
                              glyph_end - glyph_start - 8,
-                             TRUE,
-                             metrics_only );
+                             TRUE );
 #else
       error = FT_THROW( Unimplemented_Feature );
 #endif
@@ -1613,27 +1510,23 @@
         error = tt_sbit_decoder_init( decoder, face, strike_index, metrics );
         if ( !error )
         {
-          error = tt_sbit_decoder_load_image(
-                    decoder,
-                    glyph_index,
-                    0,
-                    0,
-                    0,
-                    ( load_flags & FT_LOAD_BITMAP_METRICS_ONLY ) != 0 );
+          error = tt_sbit_decoder_load_image( decoder,
+                                              glyph_index,
+                                              0,
+                                              0,
+                                              0 );
           tt_sbit_decoder_done( decoder );
         }
       }
       break;
 
     case TT_SBIT_TABLE_TYPE_SBIX:
-      error = tt_face_load_sbix_image(
-                face,
-                strike_index,
-                glyph_index,
-                stream,
-                map,
-                metrics,
-                ( load_flags & FT_LOAD_BITMAP_METRICS_ONLY ) != 0 );
+      error = tt_face_load_sbix_image( face,
+                                       strike_index,
+                                       glyph_index,
+                                       stream,
+                                       map,
+                                       metrics );
       break;
 
     default:
@@ -1642,10 +1535,9 @@
     }
 
     /* Flatten color bitmaps if color was not requested. */
-    if ( !error                                        &&
-         !( load_flags & FT_LOAD_COLOR )               &&
-         !( load_flags & FT_LOAD_BITMAP_METRICS_ONLY ) &&
-         map->pixel_mode == FT_PIXEL_MODE_BGRA         )
+    if ( !error                                &&
+         !( load_flags & FT_LOAD_COLOR )       &&
+         map->pixel_mode == FT_PIXEL_MODE_BGRA )
     {
       FT_Bitmap   new_map;
       FT_Library  library = face->root.glyph->library;
@@ -1671,12 +1563,5 @@
     return error;
   }
 
-#else /* !TT_CONFIG_OPTION_EMBEDDED_BITMAPS */
 
-  /* ANSI C doesn't like empty source files */
-  typedef int  _tt_sbit_dummy;
-
-#endif /* !TT_CONFIG_OPTION_EMBEDDED_BITMAPS */
-
-
-/* END */
+/* EOF */

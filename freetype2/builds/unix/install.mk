@@ -3,7 +3,7 @@
 #
 
 
-# Copyright (C) 1996-2019 by
+# Copyright 1996-2016 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -30,20 +30,15 @@
 #
 # We also remove `$(includedir)/ft2build.h' for the same reason.
 #
-# Note that some header files get handled twice for simplicity; a special,
-# configured version overwrites the generic one.
-#
 install: $(PROJECT_LIBRARY)
 	-$(DELDIR) $(DESTDIR)$(includedir)/freetype2
 	-$(DELETE) $(DESTDIR)$(includedir)/ft2build.h
 	$(MKINSTALLDIRS) $(DESTDIR)$(libdir)                               \
                          $(DESTDIR)$(libdir)/pkgconfig                     \
                          $(DESTDIR)$(includedir)/freetype2/freetype/config \
-                         $(DESTDIR)$(datadir)/aclocal
-ifeq ($(INSTALL_FT2_CONFIG),TRUE)
-	$(MKINSTALLDIRS) $(DESTDIR)$(bindir)                               \
+                         $(DESTDIR)$(bindir)                               \
+                         $(DESTDIR)$(datadir)/aclocal                      \
                          $(DESTDIR)$(mandir)/man1
-endif
 	$(LIBTOOL) --mode=install $(INSTALL)                             \
                                   $(PROJECT_LIBRARY) $(DESTDIR)$(libdir)
 	-for P in $(PUBLIC_H) ; do                           \
@@ -54,24 +49,20 @@ endif
           $(INSTALL_DATA)                                           \
             $$P $(DESTDIR)$(includedir)/freetype2/freetype/config ; \
         done
-	$(INSTALL_DATA) $(TOP_DIR)/include/ft2build.h                  \
+	$(INSTALL_DATA) $(TOP_DIR)/include/ft2build.h  \
           $(DESTDIR)$(includedir)/freetype2/ft2build.h
 	$(INSTALL_DATA) $(OBJ_BUILD)/ftconfig.h                        \
           $(DESTDIR)$(includedir)/freetype2/freetype/config/ftconfig.h
 	$(INSTALL_DATA) $(OBJ_DIR)/ftmodule.h                          \
           $(DESTDIR)$(includedir)/freetype2/freetype/config/ftmodule.h
-	$(INSTALL_DATA) $(OBJ_BUILD)/ftoption.h                        \
-          $(DESTDIR)$(includedir)/freetype2/freetype/config/ftoption.h
-	$(INSTALL_SCRIPT) -m 644 $(BUILD_DIR)/freetype2.m4             \
-          $(DESTDIR)$(datadir)/aclocal/freetype2.m4
-	$(INSTALL_SCRIPT) -m 644 $(OBJ_BUILD)/freetype2.pc             \
-          $(DESTDIR)$(libdir)/pkgconfig/freetype2.pc
-ifeq ($(INSTALL_FT2_CONFIG),TRUE)
-	$(INSTALL_SCRIPT) -m 755 $(OBJ_BUILD)/freetype-config          \
+	$(INSTALL_SCRIPT) -m 755 $(OBJ_BUILD)/freetype-config \
           $(DESTDIR)$(bindir)/freetype-config
-	$(INSTALL_DATA) $(TOP_DIR)/docs/freetype-config.1              \
+	$(INSTALL_SCRIPT) -m 644 $(BUILD_DIR)/freetype2.m4 \
+          $(DESTDIR)$(datadir)/aclocal/freetype2.m4
+	$(INSTALL_SCRIPT) -m 644 $(OBJ_BUILD)/freetype2.pc \
+          $(DESTDIR)$(libdir)/pkgconfig/freetype2.pc
+	$(INSTALL_DATA) $(TOP_DIR)/docs/freetype-config.1 \
           $(DESTDIR)$(mandir)/man1/freetype-config.1
-endif
 
 
 uninstall:
@@ -84,7 +75,7 @@ uninstall:
 
 
 check:
-	$(info There is no validation suite for this package.)
+	@echo There is no validation suite for this package.
 
 
 .PHONY: clean_project_unix distclean_project_unix
@@ -92,11 +83,13 @@ check:
 # Unix cleaning and distclean rules.
 #
 clean_project_unix:
-	-$(LIBTOOL) --mode=clean $(RM) $(OBJECTS_LIST)
-	-$(DELETE) $(CLEAN)
+	-$(DELETE) $(BASE_OBJECTS) $(OBJ_M) $(OBJ_S)
+	-$(DELETE) $(patsubst %.$O,%.$(SO),$(BASE_OBJECTS) $(OBJ_M) $(OBJ_S)) \
+                   $(CLEAN)
 
 distclean_project_unix: clean_project_unix
-	-$(LIBTOOL) --mode=clean $(RM) $(PROJECT_LIBRARY)
+	-$(DELETE) $(PROJECT_LIBRARY)
+	-$(DELDIR) $(OBJ_DIR)/.libs
 	-$(DELETE) *.orig *~ core *.core $(DISTCLEAN)
 
 # EOF
