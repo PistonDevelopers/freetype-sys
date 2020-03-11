@@ -3,7 +3,7 @@
 #
 
 
-# Copyright (C) 1996-2019 by
+# Copyright 1996-2016 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -80,46 +80,36 @@ ifeq ($(PLATFORM),dos)
   ifneq ($(findstring emx,$(MAKECMDGOALS)),)        # EMX gcc
     CONFIG_FILE := dos-emx.mk
     CC          := gcc
-
-    .PHONY: emx
     emx: setup
-	    @cd .
+    .PHONY: emx
   endif
 
   ifneq ($(findstring turboc,$(MAKECMDGOALS)),)     # Turbo C
     CONFIG_FILE := dos-tcc.mk
     CC          := tcc
-
-    .PHONY: turboc
     turboc: setup
-	    @cd .
+    .PHONY: turboc
   endif
 
   ifneq ($(findstring watcom,$(MAKECMDGOALS)),)     # Watcom C/C++
     CONFIG_FILE := dos-wat.mk
     CC          := wcc386
-
-    .PHONY: watcom
     watcom: setup
-	    @cd .
+    .PHONY: watcom
   endif
 
   ifneq ($(findstring borlandc,$(MAKECMDGOALS)),)   # Borland C/C++ 32-bit
     CONFIG_FILE := dos-bcc.mk
     CC          := bcc32
-
-    .PHONY: borlandc
     borlandc: setup
-	    @cd .
+    .PHONY: borlandc
   endif
 
   ifneq ($(findstring borlandc16,$(MAKECMDGOALS)),) # Borland C/C++ 16-bit
     CONFIG_FILE := dos-bcc.mk
     CC          := bcc
-
-    .PHONY: borlandc16
     borlandc16: setup
-	    @cd .
+    .PHONY: borlandc16
   endif
 
   ifneq ($(findstring bash,$(SHELL)),)              # check for bash
@@ -143,7 +133,7 @@ ifeq ($(PLATFORM),dos)
       COPY := copy
     endif  # test NT
 
-    setup: std_setup
+    setup: dos_setup
   endif
 
 endif     # test PLATFORM dos

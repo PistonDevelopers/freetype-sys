@@ -5,7 +5,7 @@
 #
 
 
-# Copyright (C) 2005-2019 by
+# Copyright 2005-2016 by
 # Werner Lemberg and Detlef Würkner.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -96,6 +96,9 @@ ftbitmap.ppc.o: $(FTSRC)/base/ftbitmap.c
 ftcid.ppc.o: $(FTSRC)/base/ftcid.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
+ftfntfmt.ppc.o: $(FTSRC)/base/ftfntfmt.c
+	$(CC) -c $(CFLAGS) -o $@ $<
+
 ftfstype.ppc.o: $(FTSRC)/base/ftfstype.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
@@ -106,6 +109,9 @@ ftglyph.ppc.o: $(FTSRC)/base/ftglyph.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 ftgxval.ppc.o: $(FTSRC)/base/ftgxval.c
+	$(CC) -c $(CFLAGS) -o $@ $<
+
+ftlcdfil.ppc.o: $(FTSRC)/base/ftlcdfil.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 ftmm.ppc.o: $(FTSRC)/base/ftmm.c
@@ -264,8 +270,8 @@ otvalid.ppc.o: $(FTSRC)/otvalid/otvalid.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 BASEPPC = ftbase.ppc.o ftbbox.ppc.o ftbdf.ppc.o ftbitmap.ppc.o ftcid.ppc.o \
-	  oftfstype.ppc.o ftgasp.ppc.o ftglyph.ppc.o                       \
-	  ftgxval.ppc.o ftmm.ppc.o ftotval.ppc.o                           \
+	  ftfntfmt.ppc.oftfstype.ppc.o ftgasp.ppc.o ftglyph.ppc.o          \
+	  ftgxval.ppc.o ftlcdfil.ppc.o ftmm.ppc.o ftotval.ppc.o            \
 	  ftpatent.ppc.o ftpfr.ppc.o ftstroke.ppc.o ftsynth.ppc.o          \
 	  fttype1.ppc.o ftwinfnt.ppc.o
 

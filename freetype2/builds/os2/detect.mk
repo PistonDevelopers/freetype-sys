@@ -3,7 +3,7 @@
 #
 
 
-# Copyright (C) 1996-2019 by
+# Copyright 1996-2016 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -40,40 +40,32 @@ ifeq ($(PLATFORM),os2)
   ifneq ($(findstring visualage,$(MAKECMDGOALS)),)     # Visual Age C++
     CONFIG_FILE := os2-icc.mk
     CC          := icc
-
-    .PHONY: visualage
     visualage: setup
-	    @cd .
+    .PHONY: visualage
   endif
 
   ifneq ($(findstring watcom,$(MAKECMDGOALS)),)        # Watcom C/C++
     CONFIG_FILE := os2-wat.mk
     CC          := wcc386
-
-    .PHONY: watcom
     watcom: setup
-	    @cd .
+    .PHONY: watcom
   endif
 
   ifneq ($(findstring borlandc,$(MAKECMDGOALS)),)      # Borland C++ 32-bit
     CONFIG_FILE := os2-bcc.mk
     CC          := bcc32
-
-    .PHONY: borlandc
     borlandc: setup
-	    @cd .
+    .PHONY: borlandc
   endif
 
   ifneq ($(findstring devel,$(MAKECMDGOALS)),)         # development target
     CONFIG_FILE := os2-dev.mk
     CC          := gcc
-
-    .PHONY: devel
     devel: setup
-	    @cd .
+    .PHONY: devel
   endif
 
-  setup: std_setup
+  setup: dos_setup
 
 endif   # test PLATFORM os2
 

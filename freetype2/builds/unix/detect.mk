@@ -3,7 +3,7 @@
 #
 
 
-# Copyright (C) 1996-2019 by
+# Copyright 1996-2016 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -40,10 +40,8 @@ ifeq ($(PLATFORM),unix)
   ifneq ($(findstring devel,$(MAKECMDGOALS)),)
     CONFIG_FILE := unix-dev.mk
     CC          := gcc
-
-    .PHONY: devel
     devel: setup
-	    @:
+    .PHONY: devel
   else
 
     # If `lcc' is the requested target, we use a special configuration
@@ -52,10 +50,8 @@ ifeq ($(PLATFORM),unix)
     ifneq ($(findstring lcc,$(MAKECMDGOALS)),)
       CONFIG_FILE := unix-lcc.mk
       CC          := lcc
-
-      .PHONY: lcc
       lcc: setup
-	      @:
+      .PHONY: lcc
     else
 
       # If a Unix platform is detected, the configure script is called and
@@ -72,11 +68,9 @@ ifeq ($(PLATFORM),unix)
       # platform).
       #
       CONFIG_FILE := unix.mk
-      must_configure := 1
-
-      .PHONY: unix
       unix: setup
-	      @:
+      must_configure := 1
+      .PHONY: unix
     endif
   endif
 

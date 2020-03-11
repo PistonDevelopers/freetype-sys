@@ -1,19 +1,19 @@
-/****************************************************************************
- *
- * pfrobjs.c
- *
- *   FreeType PFR object methods (body).
- *
- * Copyright (C) 2002-2019 by
- * David Turner, Robert Wilhelm, and Werner Lemberg.
- *
- * This file is part of the FreeType project, and may only be used,
- * modified, and distributed under the terms of the FreeType project
- * license, LICENSE.TXT.  By continuing to use, modify, or distribute
- * this file you indicate that you have read the license and
- * understand and accept it fully.
- *
- */
+/***************************************************************************/
+/*                                                                         */
+/*  pfrobjs.c                                                              */
+/*                                                                         */
+/*    FreeType PFR object methods (body).                                  */
+/*                                                                         */
+/*  Copyright 2002-2016 by                                                 */
+/*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
+/*                                                                         */
+/*  This file is part of the FreeType project, and may only be used,       */
+/*  modified, and distributed under the terms of the FreeType project      */
+/*  license, LICENSE.TXT.  By continuing to use, modify, or distribute     */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
 
 #include "pfrobjs.h"
@@ -29,7 +29,7 @@
 #include "pfrerror.h"
 
 #undef  FT_COMPONENT
-#define FT_COMPONENT  pfr
+#define FT_COMPONENT  trace_pfr
 
 
   /*************************************************************************/
@@ -122,7 +122,7 @@
               stream,
               (FT_UInt)( face_index & 0xFFFF ),
               face->header.log_dir_offset,
-              FT_BOOL( face->header.phy_font_max_size_high ) );
+              FT_BOOL( face->header.phy_font_max_size_high != 0 ) );
     if ( error )
       goto Exit;
 
@@ -185,7 +185,7 @@
        * nothing.
        */
       pfrface->family_name = phy_font->family_name;
-      if ( !pfrface->family_name )
+      if ( pfrface->family_name == NULL )
         pfrface->family_name = phy_font->font_id;
 
       /* note that the style name can be NULL in certain PFR fonts,
@@ -264,6 +264,12 @@
         charmap.encoding    = FT_ENCODING_UNICODE;
 
         error = FT_CMap_New( &pfr_cmap_class_rec, NULL, &charmap, NULL );
+
+#if 0
+        /* select default charmap */
+        if ( pfrface->num_charmaps )
+          pfrface->charmap = pfrface->charmaps[0];
+#endif
       }
 
       /* check whether we have loaded any kerning pairs */
@@ -336,12 +342,8 @@
     /* try to load an embedded bitmap */
     if ( ( load_flags & ( FT_LOAD_NO_SCALE | FT_LOAD_NO_BITMAP ) ) == 0 )
     {
-      error = pfr_slot_load_bitmap(
-                slot,
-                size,
-                gindex,
-                ( load_flags & FT_LOAD_BITMAP_METRICS_ONLY ) != 0 );
-      if ( !error )
+      error = pfr_slot_load_bitmap( slot, size, gindex );
+      if ( error == 0 )
         goto Exit;
     }
 
@@ -370,7 +372,7 @@
       FT_Bool            scaling;
 
 
-      scaling = FT_BOOL( !( load_flags & FT_LOAD_NO_SCALE ) );
+      scaling = FT_BOOL( ( load_flags & FT_LOAD_NO_SCALE ) == 0 );
 
       /* copy outline data */
       *outline = slot->glyph.loader->base.outline;
@@ -378,7 +380,7 @@
       outline->flags &= ~FT_OUTLINE_OWNER;
       outline->flags |= FT_OUTLINE_REVERSE_FILL;
 
-      if ( pfrsize->metrics.y_ppem < 24 )
+      if ( size && pfrsize->metrics.y_ppem < 24 )
         outline->flags |= FT_OUTLINE_HIGH_PRECISION;
 
       /* compute the advance vector */

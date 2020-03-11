@@ -1,19 +1,19 @@
-/****************************************************************************
- *
- * ftadvanc.c
- *
- *   Quick computation of advance widths (body).
- *
- * Copyright (C) 2008-2019 by
- * David Turner, Robert Wilhelm, and Werner Lemberg.
- *
- * This file is part of the FreeType project, and may only be used,
- * modified, and distributed under the terms of the FreeType project
- * license, LICENSE.TXT.  By continuing to use, modify, or distribute
- * this file you indicate that you have read the license and
- * understand and accept it fully.
- *
- */
+/***************************************************************************/
+/*                                                                         */
+/*  ftadvanc.c                                                             */
+/*                                                                         */
+/*    Quick computation of advance widths (body).                          */
+/*                                                                         */
+/*  Copyright 2008-2016 by                                                 */
+/*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
+/*                                                                         */
+/*  This file is part of the FreeType project, and may only be used,       */
+/*  modified, and distributed under the terms of the FreeType project      */
+/*  license, LICENSE.TXT.  By continuing to use, modify, or distribute     */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
 
 #include <ft2build.h>
@@ -36,7 +36,7 @@
     if ( flags & FT_LOAD_NO_SCALE )
       return FT_Err_Ok;
 
-    if ( !face->size )
+    if ( face->size == NULL )
       return FT_THROW( Invalid_Size_Handle );
 
     if ( flags & FT_LOAD_VERTICAL_LAYOUT )
@@ -60,13 +60,12 @@
    /*  - unscaled load                                             */
    /*  - unhinted load                                             */
    /*  - light-hinted load                                         */
-   /*  - if a variations font, it must have an `HVAR' or `VVAR'    */
-   /*    table (thus the old MM or GX fonts don't qualify; this    */
-   /*    gets checked by the driver-specific functions)            */
+   /*  - neither a MM nor a GX font                                */
 
-#define LOAD_ADVANCE_FAST_CHECK( face, flags )                      \
-          ( flags & ( FT_LOAD_NO_SCALE | FT_LOAD_NO_HINTING )    || \
-            FT_LOAD_TARGET_MODE( flags ) == FT_RENDER_MODE_LIGHT )
+#define LOAD_ADVANCE_FAST_CHECK( face, flags )                          \
+          ( ( flags & ( FT_LOAD_NO_SCALE | FT_LOAD_NO_HINTING )    ||   \
+              FT_LOAD_TARGET_MODE( flags ) == FT_RENDER_MODE_LIGHT ) && \
+            !FT_HAS_MULTIPLE_MASTERS( face )                         )
 
 
   /* documentation is in ftadvanc.h */
@@ -116,12 +115,9 @@
                    FT_Int32   flags,
                    FT_Fixed  *padvances )
   {
-    FT_Error  error = FT_Err_Ok;
-
     FT_Face_GetAdvancesFunc  func;
-
-    FT_UInt  num, end, nn;
-    FT_Int   factor;
+    FT_UInt                  num, end, nn;
+    FT_Error                 error = FT_Err_Ok;
 
 
     if ( !face )
@@ -155,17 +151,16 @@
       return FT_THROW( Unimplemented_Feature );
 
     flags |= (FT_UInt32)FT_LOAD_ADVANCE_ONLY;
-    factor = ( flags & FT_LOAD_NO_SCALE ) ? 1 : 1024;
     for ( nn = 0; nn < count; nn++ )
     {
       error = FT_Load_Glyph( face, start + nn, flags );
       if ( error )
         break;
 
-      /* scale from 26.6 to 16.16, unless NO_SCALE was requested */
+      /* scale from 26.6 to 16.16 */
       padvances[nn] = ( flags & FT_LOAD_VERTICAL_LAYOUT )
-                      ? face->glyph->advance.y * factor
-                      : face->glyph->advance.x * factor;
+                      ? face->glyph->advance.y * 1024
+                      : face->glyph->advance.x * 1024;
     }
 
     return error;

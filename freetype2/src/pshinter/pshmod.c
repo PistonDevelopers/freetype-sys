@@ -1,25 +1,26 @@
-/****************************************************************************
- *
- * pshmod.c
- *
- *   FreeType PostScript hinter module implementation (body).
- *
- * Copyright (C) 2001-2019 by
- * David Turner, Robert Wilhelm, and Werner Lemberg.
- *
- * This file is part of the FreeType project, and may only be used,
- * modified, and distributed under the terms of the FreeType project
- * license, LICENSE.TXT.  By continuing to use, modify, or distribute
- * this file you indicate that you have read the license and
- * understand and accept it fully.
- *
- */
+/***************************************************************************/
+/*                                                                         */
+/*  pshmod.c                                                               */
+/*                                                                         */
+/*    FreeType PostScript hinter module implementation (body).             */
+/*                                                                         */
+/*  Copyright 2001-2016 by                                                 */
+/*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
+/*                                                                         */
+/*  This file is part of the FreeType project, and may only be used,       */
+/*  modified, and distributed under the terms of the FreeType project      */
+/*  license, LICENSE.TXT.  By continuing to use, modify, or distribute     */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
 
 #include <ft2build.h>
 #include FT_INTERNAL_OBJECTS_H
 #include "pshrec.h"
 #include "pshalgo.h"
+#include "pshpic.h"
 
 
   /* the Postscript Hinter module structure */
@@ -94,11 +95,9 @@
 
   FT_DEFINE_PSHINTER_INTERFACE(
     pshinter_interface,
-
     pshinter_get_globals_funcs,
     pshinter_get_t1_funcs,
-    pshinter_get_t2_funcs
-  )
+    pshinter_get_t2_funcs )
 
 
   FT_DEFINE_MODULE(
@@ -110,11 +109,11 @@
     0x10000L,
     0x20000L,
 
-    &pshinter_interface,        /* module-specific interface */
+    &PSHINTER_INTERFACE_GET,              /* module-specific interface */
 
-    (FT_Module_Constructor)ps_hinter_init,  /* module_init   */
-    (FT_Module_Destructor) ps_hinter_done,  /* module_done   */
-    (FT_Module_Requester)  NULL             /* get_interface */
-  )
+    (FT_Module_Constructor)ps_hinter_init,
+    (FT_Module_Destructor) ps_hinter_done,
+    (FT_Module_Requester)  NULL )   /* no additional interface for now */
+
 
 /* END */

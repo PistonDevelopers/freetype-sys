@@ -1,6 +1,6 @@
 # CMakeLists.txt
 #
-# Copyright (C) 2013-2019 by
+# Copyright 2013-2016 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # Written originally by John Cary <cary@txcorp.com>
@@ -12,44 +12,35 @@
 # fully.
 #
 #
-# The following will 1. create a build directory and 2. change into it and
-# call cmake to configure the build with default parameters as a static
-# library.
+# As a preliminary, create a compilation directory and change into it, for
+# example
 #
-#   cmake -E make_directory build
-#   cmake -E chdir build cmake ..
+#   mkdir ~/freetype2.compiled
+#   cd ~/freetype2.compiled
+#
+# Now you can say
+#
+#   cmake <path-to-freetype2-src-dir>
+#
+# to create a Makefile that builds a static version of the library.
 #
 # For a dynamic library, use
 #
-#   cmake -E chdir build cmake -D BUILD_SHARED_LIBS:BOOL=true ..
+#   cmake <path-to-freetype2-src-dir> -D BUILD_SHARED_LIBS:BOOL=true
 #
 # For a framework on OS X, use
 #
-#   cmake -E chdir build cmake -G Xcode -D BUILD_FRAMEWORK:BOOL=true ..
+#   cmake <path-to-freetype2-src-dir> -D BUILD_FRAMEWORK:BOOL=true -G Xcode
+#
+# instead.
 #
 # For an iOS static library, use
 #
-#   cmake -E chdir build cmake -G Xcode -D IOS_PLATFORM=OS ..
+#   cmake -D IOS_PLATFORM=OS -G Xcode <path-to-freetype2-src-dir>
 #
 # or
 #
-#   cmake -E chdir build cmake -G Xcode -D IOS_PLATFORM=SIMULATOR ..
-#
-# or
-#
-#   cmake -E chdir build cmake -G Xcode -D IOS_PLATFORM=SIMULATOR64 ..
-#
-# Finally, build the project with:
-#
-#   cmake --build build
-#
-# Install it with
-#
-#   (sudo) cmake --build build --target install
-#
-# A binary distribution can be made with
-#
-#   cmake --build build --config Release --target package
+#   cmake -D IOS_PLATFORM=SIMULATOR -G Xcode <path-to-freetype2-src-dir>
 #
 # Please refer to the cmake manual for further options, in particular, how
 # to modify compilation and linking parameters.
@@ -68,42 +59,36 @@
 # . `CMakeLists.txt' is provided as-is since it is normally not used by the
 #   developer team.
 #
-# . Set the `FT_WITH_ZLIB', `FT_WITH_BZIP2', `FT_WITH_PNG', and
-#   `FT_WITH_HARFBUZZ' CMake variables to `ON' to force using a dependency.
-#   Leave a variable undefined (which is the default) to use the dependency
-#   only if it is available.  Set `CMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=TRUE' to
-#   disable a dependency completely (CMake package name, so `BZip2' instead of
-#   `BZIP2'). Example:
+# . If you want to disable the automatic generation of the distribution
+#   targets, add the `-D FREETYPE_NO_DIST=true' command line argument.
 #
-#     cmake -DFT_WITH_ZLIB=ON -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=TRUE [...]
+# . Set the `WITH_ZLIB', `WITH_BZip2', `WITH_PNG', and `WITH_HarfBuzz'
+#   CMake variables to `ON' or `OFF' to force or skip using a dependency.
+#   Leave a variable undefined (which is the default) to use the dependency
+#   only if it is available.  Example:
+#
+#     cmake ... -DWITH_ZLIB=ON -DWITH_HarfBuzz=OFF ...
 #
 # . Installation of FreeType can be controlled with the CMake variables
 #   `SKIP_INSTALL_HEADERS', `SKIP_INSTALL_LIBRARIES', and `SKIP_INSTALL_ALL'
 #   (this is compatible with the same CMake variables in zlib's CMake
 #   support).
 
-# FreeType explicitly marks the API to be exported and relies on the compiler
-# to hide all other symbols. CMake supports a C_VISBILITY_PRESET property
-# starting with 2.8.12.
-cmake_minimum_required(VERSION 2.8.12)
 
-if (NOT CMAKE_VERSION VERSION_LESS 3.3)
-  # Allow symbol visibility settings also on static libraries. CMake < 3.3
-  # only sets the propery on a shared library build.
-  cmake_policy(SET CMP0063 NEW)
-endif ()
+cmake_minimum_required(VERSION 2.6)
+
 
 include(CheckIncludeFile)
+
 
 # CMAKE_TOOLCHAIN_FILE must be set before `project' is called, which
 # configures the base build environment and references the toolchain file
 if (APPLE)
   if (DEFINED IOS_PLATFORM)
     if (NOT "${IOS_PLATFORM}" STREQUAL "OS"
-        AND NOT "${IOS_PLATFORM}" STREQUAL "SIMULATOR"
-        AND NOT "${IOS_PLATFORM}" STREQUAL "SIMULATOR64")
+        AND NOT "${IOS_PLATFORM}" STREQUAL "SIMULATOR")
       message(FATAL_ERROR
-        "IOS_PLATFORM must be set to either OS, SIMULATOR, or SIMULATOR64")
+        "IOS_PLATFORM must be set to either OS or SIMULATOR")
     endif ()
     if (NOT "${CMAKE_GENERATOR}" STREQUAL "Xcode")
       message(AUTHOR_WARNING
@@ -131,47 +116,30 @@ else ()
 endif ()
 
 
-project(freetype C)
+project(freetype)
 
-set(VERSION_MAJOR "2")
-set(VERSION_MINOR "10")
-set(VERSION_PATCH "1")
 
-# SOVERSION scheme: CURRENT.AGE.REVISION
-#   If there was an incompatible interface change:
-#     Increment CURRENT. Set AGE and REVISION to 0
-#   If there was a compatible interface change:
-#     Increment AGE. Set REVISION to 0
-#   If the source code was changed, but there were no interface changes:
-#     Increment REVISION.
-set(LIBRARY_VERSION "6.16.0")
-set(LIBRARY_SOVERSION "6")
-
-# These options mean "require x and complain if not found". They'll get
-# optionally found anyway. Use `-DCMAKE_DISABLE_FIND_PACKAGE_x=TRUE` to disable
-# searching for a packge entirely (x is the CMake package name, so "BZip2"
-# instead of "BZIP2").
-option(FT_WITH_ZLIB "Use system zlib instead of internal library." OFF)
-option(FT_WITH_BZIP2 "Support bzip2 compressed fonts." OFF)
-option(FT_WITH_PNG "Support PNG compressed OpenType embedded bitmaps." OFF)
-option(FT_WITH_HARFBUZZ "Improve auto-hinting of OpenType fonts." OFF)
-
+if (WIN32 AND NOT MINGW AND BUILD_SHARED_LIBS)
+  message(FATAL_ERROR "Building shared libraries on Windows needs MinGW")
+endif ()
 
 # Disallow in-source builds
-if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
+if ("${PROJECT_BINARY_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
   message(FATAL_ERROR
-    "In-source builds are not permitted!  Make a separate folder for"
-    " building, e.g.,\n"
-    "  cmake -E make_directory build\n"
-    "  cmake -E chdir build cmake ..\n"
-    "Before that, remove the files created by this failed run with\n"
-    "  cmake -E remove CMakeCache.txt\n"
-    "  cmake -E remove_directory CMakeFiles")
+    "
+In-source builds are not permitted!  Make a separate folder for"
+    " building, e.g.,"
+    "
+  mkdir build; cd build; cmake .."
+    "
+Before that, remove the files created by this failed run with"
+    "
+  rm -rf CMakeCache.txt CMakeFiles")
 endif ()
 
 
 # Add local cmake modules
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/builds/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/builds/cmake)
 
 
 if (BUILD_FRAMEWORK)
@@ -184,32 +152,45 @@ if (BUILD_FRAMEWORK)
 endif ()
 
 
+set(VERSION_MAJOR "2")
+set(VERSION_MINOR "6")
+set(VERSION_PATCH "5")
+
+set(PROJECT_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
+set(SHARED_LIBRARY_VERSION ${VERSION_MAJOR}.${VERSION_MINOR})
+
+
+# Compiler definitions for building the library
+add_definitions(-DFT2_BUILD_LIBRARY)
+
+
 # Find dependencies
-if (FT_WITH_HARFBUZZ)
-  find_package(HarfBuzz 1.3.0 REQUIRED)
-else ()
-  find_package(HarfBuzz 1.3.0)
-endif ()
+foreach (d ZLIB BZip2 PNG HarfBuzz)
+  string(TOUPPER "${d}" D)
 
-if (FT_WITH_PNG)
-  find_package(PNG REQUIRED)
-else ()
-  find_package(PNG)
-endif ()
+  if (DEFINED WITH_${d} OR DEFINED WITH_${D})
+    if (WITH_${d} OR WITH_${D})
+      find_package(${d} QUIET REQUIRED)
+    endif ()
+  else ()
+    find_package(${d} QUIET)
+  endif ()
 
-if (FT_WITH_ZLIB)
-  find_package(ZLIB REQUIRED)
-else ()
-  find_package(ZLIB)
-endif ()
+  if (${d}_FOUND OR ${D}_FOUND)
+    message(STATUS "Building with ${d}")
+  endif ()
+endforeach ()
 
-if (FT_WITH_BZIP2)
-  find_package(BZip2 REQUIRED)
-else ()
-  find_package(BZip2)
-endif ()
+
+message(STATUS
+  "Creating directory ${PROJECT_BINARY_DIR}/include/freetype/config")
+file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/include/freetype/config")
+
 
 # Create the configuration file
+message(STATUS
+  "Creating file ${PROJECT_BINARY_DIR}/include/freetype/config/ftconfig.h")
+
 if (UNIX)
   check_include_file("unistd.h" HAVE_UNISTD_H)
   check_include_file("fcntl.h" HAVE_FCNTL_H)
@@ -219,38 +200,38 @@ if (UNIX)
     FTCONFIG_H)
   if (HAVE_UNISTD_H)
     string(REGEX REPLACE
-      "#undef +(HAVE_UNISTD_H)" "#define \\1 1"
+      "#undef +(HAVE_UNISTD_H)" "#define \\1"
       FTCONFIG_H "${FTCONFIG_H}")
   endif ()
   if (HAVE_FCNTL_H)
     string(REGEX REPLACE
-      "#undef +(HAVE_FCNTL_H)" "#define \\1 1"
+      "#undef +(HAVE_FCNTL_H)" "#define \\1"
       FTCONFIG_H "${FTCONFIG_H}")
   endif ()
   if (HAVE_STDINT_H)
     string(REGEX REPLACE
-      "#undef +(HAVE_STDINT_H)" "#define \\1 1"
+      "#undef +(HAVE_STDINT_H)" "#define \\1"
       FTCONFIG_H "${FTCONFIG_H}")
   endif ()
   string(REPLACE "/undef " "#undef "
     FTCONFIG_H "${FTCONFIG_H}")
+  file(WRITE "${PROJECT_BINARY_DIR}/include/freetype/config/ftconfig.h-new"
+    "${FTCONFIG_H}")
 else ()
   file(READ "${PROJECT_SOURCE_DIR}/include/freetype/config/ftconfig.h"
     FTCONFIG_H)
+  file(WRITE "${PROJECT_BINARY_DIR}/include/freetype/config/ftconfig.h-new"
+    "${FTCONFIG_H}")
 endif ()
-
-set(FTCONFIG_H_NAME "${PROJECT_BINARY_DIR}/include/freetype/config/ftconfig.h")
-if (EXISTS "${FTCONFIG_H_NAME}")
-  file(READ "${FTCONFIG_H_NAME}" ORIGINAL_FTCONFIG_H)
-else ()
-  set(ORIGINAL_FTCONFIG_H "")
-endif ()
-if (NOT (ORIGINAL_FTCONFIG_H STREQUAL FTCONFIG_H))
-  file(WRITE "${FTCONFIG_H_NAME}" "${FTCONFIG_H}")
-endif ()
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  "${PROJECT_BINARY_DIR}/include/freetype/config/ftconfig.h-new"
+  "${PROJECT_BINARY_DIR}/include/freetype/config/ftconfig.h")
 
 
 # Create the options file
+message(STATUS
+  "Creating file ${PROJECT_BINARY_DIR}/include/freetype/config/ftoption.h")
+
 file(READ "${PROJECT_SOURCE_DIR}/include/freetype/config/ftoption.h"
   FTOPTION_H)
 if (ZLIB_FOUND)
@@ -273,16 +254,16 @@ if (HARFBUZZ_FOUND)
     "/\\* +(#define +FT_CONFIG_OPTION_USE_HARFBUZZ) +\\*/" "\\1"
     FTOPTION_H "${FTOPTION_H}")
 endif ()
+file(WRITE "${PROJECT_BINARY_DIR}/include/freetype/config/ftoption.h-new"
+  "${FTOPTION_H}")
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  "${PROJECT_BINARY_DIR}/include/freetype/config/ftoption.h-new"
+  "${PROJECT_BINARY_DIR}/include/freetype/config/ftoption.h")
 
-set(FTOPTION_H_NAME "${PROJECT_BINARY_DIR}/include/freetype/config/ftoption.h")
-if (EXISTS "${FTOPTION_H_NAME}")
-  file(READ "${FTOPTION_H_NAME}" ORIGINAL_FTOPTION_H)
-else ()
-  set(ORIGINAL_FTOPTION_H "")
-endif ()
-if (NOT (ORIGINAL_FTOPTION_H STREQUAL FTOPTION_H))
-  file(WRITE "${FTOPTION_H_NAME}" "${FTOPTION_H}")
-endif ()
+
+# Specify library include directories
+include_directories("${PROJECT_SOURCE_DIR}/include")
+include_directories(BEFORE "${PROJECT_BINARY_DIR}/include")
 
 
 file(GLOB PUBLIC_HEADERS "include/ft2build.h" "include/freetype/*.h")
@@ -297,11 +278,13 @@ set(BASE_SRCS
   src/base/ftbdf.c
   src/base/ftbitmap.c
   src/base/ftcid.c
+  src/base/ftfntfmt.c
   src/base/ftfstype.c
   src/base/ftgasp.c
   src/base/ftglyph.c
   src/base/ftgxval.c
   src/base/ftinit.c
+  src/base/ftlcdfil.c
   src/base/ftmm.c
   src/base/ftotval.c
   src/base/ftpatent.c
@@ -333,24 +316,22 @@ set(BASE_SRCS
 )
 
 if (WIN32)
-  enable_language(RC)
-  list(APPEND BASE_SRCS builds/windows/ftdebug.c
-                        src/base/ftver.rc)
+  set(BASE_SRCS ${BASE_SRCS} builds/windows/ftdebug.c)
 elseif (WINCE)
-  list(APPEND BASE_SRCS builds/wince/ftdebug.c)
+  set(BASE_SRCS ${BASE_SRCS} builds/wince/ftdebug.c)
 else ()
-  list(APPEND BASE_SRCS src/base/ftdebug.c)
+  set(BASE_SRCS ${BASE_SRCS} src/base/ftdebug.c)
 endif ()
+
 
 if (BUILD_FRAMEWORK)
-  list(APPEND BASE_SRCS builds/mac/freetype-Info.plist)
+  set(BASE_SRCS
+    ${BASE_SRCS}
+    builds/mac/freetype-Info.plist
+  )
 endif ()
 
-
-if (NOT DISABLE_FORCE_DEBUG_POSTFIX)
-  set(CMAKE_DEBUG_POSTFIX d)
-endif ()
-
+set(CMAKE_DEBUG_POSTFIX d)
 
 add_library(freetype
   ${PUBLIC_HEADERS}
@@ -359,38 +340,14 @@ add_library(freetype
   ${BASE_SRCS}
 )
 
-set_target_properties(
-  freetype PROPERTIES
-    C_VISIBILITY_PRESET hidden)
-
-target_compile_definitions(
-  freetype PRIVATE FT2_BUILD_LIBRARY)
-
-if (WIN32)
-  target_compile_definitions(
-    freetype PRIVATE _CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_WARNINGS)
-  if (BUILD_SHARED_LIBS)
-    target_compile_definitions(
-      freetype PRIVATE DLL_EXPORT)
-  endif ()
-endif ()
 
 if (BUILD_SHARED_LIBS)
   set_target_properties(freetype PROPERTIES
-    VERSION ${LIBRARY_VERSION}
-    SOVERSION ${LIBRARY_SOVERSION})
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${SHARED_LIBRARY_VERSION}
+    COMPILE_DEFINITIONS freetype_EXPORTS
+  )
 endif ()
-
-# Pick up ftconfig.h and ftoption.h generated above, first.
-target_include_directories(
-  freetype
-    PUBLIC
-      $<INSTALL_INTERFACE:include/freetype2>
-      $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    PRIVATE
-      ${CMAKE_CURRENT_BINARY_DIR}/include
-      ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 
 if (BUILD_FRAMEWORK)
@@ -405,130 +362,91 @@ if (BUILD_FRAMEWORK)
   )
 endif ()
 
+if (NOT CMAKE_VERSION VERSION_LESS 2.8.11)
+  target_include_directories(freetype
+    PUBLIC $<INSTALL_INTERFACE:include/freetype2>)
+endif ()
 
-set(PKG_CONFIG_REQUIRED_PRIVATE "")
+if (CMAKE_VERSION VERSION_LESS 2.8.12)
+  set(MAYBE_PRIVATE "")
+else ()
+  set(MAYBE_PRIVATE "PRIVATE")
+endif ()
 
 if (ZLIB_FOUND)
-  target_link_libraries(freetype PRIVATE ${ZLIB_LIBRARIES})
-  target_include_directories(freetype PRIVATE ${ZLIB_INCLUDE_DIRS})
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE zlib)
+  target_link_libraries(freetype ${MAYBE_PRIVATE} ${ZLIB_LIBRARIES})
+  include_directories(${ZLIB_INCLUDE_DIRS})
 endif ()
 if (BZIP2_FOUND)
-  target_link_libraries(freetype PRIVATE ${BZIP2_LIBRARIES})
-  target_include_directories(freetype PRIVATE ${BZIP2_INCLUDE_DIR}) # not BZIP2_INCLUDE_DIRS
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE bzip2)
+  target_link_libraries(freetype ${MAYBE_PRIVATE} ${BZIP2_LIBRARIES})
+  include_directories(${BZIP2_INCLUDE_DIR}) # not BZIP2_INCLUDE_DIRS
 endif ()
 if (PNG_FOUND)
-  target_link_libraries(freetype PRIVATE ${PNG_LIBRARIES})
-  target_compile_definitions(freetype PRIVATE ${PNG_DEFINITIONS})
-  target_include_directories(freetype PRIVATE ${PNG_INCLUDE_DIRS})
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE libpng)
+  add_definitions(${PNG_DEFINITIONS})
+  target_link_libraries(freetype ${MAYBE_PRIVATE} ${PNG_LIBRARIES})
+  include_directories(${PNG_INCLUDE_DIRS})
 endif ()
 if (HARFBUZZ_FOUND)
-  target_link_libraries(freetype PRIVATE ${HARFBUZZ_LIBRARIES})
-  target_include_directories(freetype PRIVATE ${HARFBUZZ_INCLUDE_DIRS})
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE harfbuzz)
+  target_link_libraries(freetype ${MAYBE_PRIVATE} ${HARFBUZZ_LIBRARIES})
+  include_directories(${HARFBUZZ_INCLUDE_DIRS})
 endif ()
 
 
-# Installation
-include(GNUInstallDirs)
-
+# Installations
+# Note the trailing slash in the argument to the `DIRECTORY' directive
 if (NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL)
-  install(
-    # Note the trailing slash in the argument to `DIRECTORY'!
-    DIRECTORY ${PROJECT_SOURCE_DIR}/include/
-      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/freetype2
-      COMPONENT headers
-      PATTERN "internal" EXCLUDE
-      PATTERN "ftconfig.h" EXCLUDE
-      PATTERN "ftoption.h" EXCLUDE)
-  install(
-    FILES ${PROJECT_BINARY_DIR}/include/freetype/config/ftconfig.h
-          ${PROJECT_BINARY_DIR}/include/freetype/config/ftoption.h
-      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/freetype2/freetype/config
-      COMPONENT headers)
+  install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
+    DESTINATION include/freetype2
+    PATTERN "internal" EXCLUDE
+    PATTERN "ftconfig.h" EXCLUDE
+    PATTERN "ftoption.h" EXCLUDE
+    )
+  install(FILES
+    ${PROJECT_BINARY_DIR}/include/freetype/config/ftconfig.h
+    ${PROJECT_BINARY_DIR}/include/freetype/config/ftoption.h
+    DESTINATION include/freetype2/freetype/config
+    )
 endif ()
 
 if (NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
-  # Generate the pkg-config file
-  if (UNIX)
-    file(READ ${PROJECT_SOURCE_DIR}/builds/unix/freetype2.in FREETYPE2_PC_IN)
-
-    string(REPLACE ";" ", " PKG_CONFIG_REQUIRED_PRIVATE "${PKG_CONFIG_REQUIRED_PRIVATE}")
-
-    string(REPLACE "%prefix%" ${CMAKE_INSTALL_PREFIX}
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-    string(REPLACE "%exec_prefix%" "\${prefix}"
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-    string(REPLACE "%libdir%" "\${prefix}/${CMAKE_INSTALL_LIBDIR}"
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-    string(REPLACE "%includedir%" "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}"
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-    string(REPLACE "%ft_version%" "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-    string(REPLACE "%REQUIRES_PRIVATE%" "${PKG_CONFIG_REQUIRED_PRIVATE}"
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-    string(REPLACE "%LIBS_PRIVATE%" ""  # All libs support pkg-config
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-
-    set(FREETYPE2_PC_IN_NAME "${PROJECT_BINARY_DIR}/freetype2.pc")
-    if (EXISTS "${FREETYPE2_PC_IN_NAME}")
-      file(READ "${FREETYPE2_PC_IN_NAME}" ORIGINAL_FREETYPE2_PC_IN)
-    else ()
-      set(ORIGINAL_FREETYPE2_PC_IN "")
-    endif ()
-    if (NOT (ORIGINAL_FREETYPE2_PC_IN STREQUAL FREETYPE2_PC_IN))
-      file(WRITE "${FREETYPE2_PC_IN_NAME}" ${FREETYPE2_PC_IN})
-    endif ()
-
-    install(
-      FILES ${PROJECT_BINARY_DIR}/freetype2.pc
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-      COMPONENT pkgconfig)
-  endif ()
-
-  install(
-    TARGETS freetype
-      EXPORT freetype-targets
-      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-      FRAMEWORK DESTINATION Library/Frameworks
-      COMPONENT libraries)
-  install(
+  install(TARGETS freetype
     EXPORT freetype-targets
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/freetype
-      FILE freetype-config.cmake
-      COMPONENT headers)
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    FRAMEWORK DESTINATION Library/Frameworks
+    )
+  install(EXPORT freetype-targets
+    DESTINATION lib/cmake/freetype
+    FILE freetype-config.cmake
+    )
 endif ()
 
 
 # Packaging
-set(CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The FreeType font rendering library.")
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/docs/LICENSE.TXT")
-
+# CPack version numbers for release tarball name.
 set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
-set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH}})
+if (NOT DEFINED CPACK_PACKAGE_DESCRIPTION_SUMMARY)
+  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${CMAKE_PROJECT_NAME}")
+endif ()
+if (NOT DEFINED CPACK_SOURCE_PACKAGE_FILE_NAME)
+  set(CPACK_SOURCE_PACKAGE_FILE_NAME
+    "${CMAKE_PROJECT_NAME}-${PROJECT_VERSION}-r${PROJECT_REV}"
+    CACHE INTERNAL "tarball basename"
+  )
+endif ()
+set(CPACK_SOURCE_GENERATOR TGZ)
+set(CPACK_SOURCE_IGNORE_FILES
+  "/CVS/;/.svn/;.swp$;.#;/#;/build/;/serial/;/ser/;/parallel/;/par/;~;/preconfig.out;/autom4te.cache/;/.config")
+set(CPACK_GENERATOR TGZ)
+include(CPack)
 
-if (WIN32)
-  set(CPACK_GENERATOR ZIP)
-else ()
-  set(CPACK_GENERATOR TGZ)
+
+# Add `make dist' target if FREETYPE_DIST is set (which is the default)
+if (NOT DEFINED FREETYPE_NO_DIST)
+  add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 endif ()
 
-set(CPACK_COMPONENT_LIBRARIES_DISPLAY_NAME "Libraries")
-set(CPACK_COMPONENT_HEADERS_DISPLAY_NAME "C/C++ Headers")
-set(CPACK_COMPONENT_LIBRARIES_DESCRIPTION
-  "Library used to build programs which use FreeType")
-set(CPACK_COMPONENT_HEADERS_DESCRIPTION
-  "C/C++ header files for use with FreeType")
-set(CPACK_COMPONENT_HEADERS_DEPENDS libraries)
-set(CPACK_COMPONENT_LIBRARIES_GROUP "Development")
-set(CPACK_COMPONENT_HEADERS_GROUP "Development")
-
-include(CPack)
+# eof
