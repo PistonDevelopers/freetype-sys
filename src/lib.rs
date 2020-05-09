@@ -1002,4 +1002,7 @@ extern "C" {
     pub fn FT_Outline_Decompose(outline: *mut FT_Outline, func_interface: *const FT_Outline_Funcs, user: *mut c_void) -> FT_Error;
 
     pub fn FT_Outline_Get_Orientation(outline: *mut FT_Outline) -> FT_Orientation;
+
+    pub fn FT_GlyphSlot_Embolden(slot: FT_GlyphSlot);
+    pub fn FT_GlyphSlot_Oblique(slot: FT_GlyphSlot);
 }
