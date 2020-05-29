@@ -6,8 +6,7 @@ use std::env;
 
 fn main() {
     let target = env::var("TARGET").unwrap();
-    if !target.contains("eabi")
-        && !target.contains("android")
+    if !target.contains("android")
         && pkg_config::Config::new().atleast_version("18.5.12").find("freetype2").is_ok()
     {
         return
