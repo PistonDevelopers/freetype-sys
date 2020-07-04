@@ -404,7 +404,7 @@ pub const FT_ORIENTATION_FILL_LEFT  : FT_Orientation = FT_ORIENTATION_POSTSCRIPT
 
 
 // Constants
-pub const FT_FACE_FLAG_SCALABLE         : FT_Long = 1 << 0;
+pub const FT_FACE_FLAG_SCALABLE         : FT_Long = 1;
 pub const FT_FACE_FLAG_FIXED_SIZES      : FT_Long = 1 << 1;
 pub const FT_FACE_FLAG_FIXED_WIDTH      : FT_Long = 1 << 2;
 pub const FT_FACE_FLAG_SFNT             : FT_Long = 1 << 3;
@@ -420,7 +420,7 @@ pub const FT_FACE_FLAG_CID_KEYED        : FT_Long = 1 << 12;
 pub const FT_FACE_FLAG_TRICKY           : FT_Long = 1 << 13;
 pub const FT_FACE_FLAG_COLOR            : FT_Long = 1 << 14;
 
-pub const FT_STYLE_FLAG_ITALIC : FT_Long = 1 << 0;
+pub const FT_STYLE_FLAG_ITALIC : FT_Long = 1;
 pub const FT_STYLE_FLAG_BOLD   : FT_Long = 1 << 1;
 
 pub const FT_OPEN_MEMORY   : FT_UInt = 0x1;
@@ -438,7 +438,7 @@ pub const FT_SUBGLYPH_FLAG_2X2                : FT_UInt = 0x80;
 pub const FT_SUBGLYPH_FLAG_USE_MY_METRICS     : FT_UInt = 0x200;
 
 pub const FT_LOAD_DEFAULT                     : FT_Int32 = 0x0;
-pub const FT_LOAD_NO_SCALE                    : FT_Int32 = 0x1 << 0;
+pub const FT_LOAD_NO_SCALE                    : FT_Int32 = 0x1;
 pub const FT_LOAD_NO_HINTING                  : FT_Int32 = 0x1 << 1;
 pub const FT_LOAD_RENDER                      : FT_Int32 = 0x1 << 2;
 pub const FT_LOAD_NO_BITMAP                   : FT_Int32 = 0x1 << 3;
@@ -918,6 +918,9 @@ extern {
 extern "C" {
     pub fn FT_Init_FreeType(alibrary: *mut FT_Library) -> FT_Error;
     pub fn FT_Done_FreeType(library: FT_Library) -> FT_Error;
+    pub fn FT_Set_Default_Properties(library: FT_Library);
+    pub fn FT_Property_Get(library: FT_Library, module_name: *const FT_String, property_name: *const FT_String, value: *mut c_void) -> FT_Error;
+    pub fn FT_Property_Set(library: FT_Library, module_name: *const FT_String, property_name: *const FT_String, value: *const c_void) -> FT_Error;
     pub fn FT_New_Library(memory: FT_Memory, alibrary: *mut FT_Library) -> FT_Error;
     pub fn FT_Done_Library(library: FT_Library) -> FT_Error;
     pub fn FT_Reference_Library(library: FT_Library) -> FT_Error;
