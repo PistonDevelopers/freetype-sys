@@ -6,10 +6,17 @@ use std::env;
 
 fn main() {
     let target = env::var("TARGET").unwrap();
-    if !target.contains("android")
-        && pkg_config::Config::new().atleast_version("18.5.12").find("freetype2").is_ok()
-    {
-        return
+
+    if !target.contains("android") {
+        if let Ok(dep) = pkg_config::Config::new()
+            .atleast_version("18.5.12")
+            .find("freetype2")
+        {
+            for inc in &dep.include_paths[..] {
+                println!("cargo:include={}", inc.to_str().unwrap());
+            }
+            return;
+        }
     }
 
     let mut config = Config::new("freetype2");
@@ -27,4 +34,5 @@ fn main() {
     println!("cargo:rustc-link-search=native={}/lib", dst.display());
     println!("cargo:rustc-link-lib=static=freetype");
     println!("cargo:outdir={}", out_dir);
+    println!("cargo:include={}/include", out_dir);
 }

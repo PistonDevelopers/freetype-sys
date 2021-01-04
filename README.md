@@ -1,7 +1,15 @@
 freetype-sys [![Build Status](https://travis-ci.org/PistonDevelopers/freetype-sys.svg?branch=master)](https://travis-ci.org/PistonDevelopers/freetype-sys) [![Build status](https://ci.appveyor.com/api/projects/status/cx6i2r1ibroywo2q?svg=true)](https://ci.appveyor.com/project/jhasse/freetype-sys)
 ============
 
-Low level bindings for the FreeType font library
+Low level bindings for the FreeType font library.
+
+## C headers
+
+If your Rust project includes C code that needs to interface with FreeType, the
+environment variable `DEP_FREETYPE_INCLUDE` will be exported to its build
+script, giving the path in which the FreeType include files may be found. This
+path may be in the system or it may be inside this crate’s `$OUT_DIR`, depending
+on whether it was necessary to build the FreeType library locally or not.
 
 ## For windows users
 
