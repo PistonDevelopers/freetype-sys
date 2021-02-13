@@ -17,10 +17,11 @@ fn main() {
         config.generator(s);
     }
     let dst = config
-        .define("WITH_BZip2", "OFF")
-        .define("WITH_HarfBuzz", "OFF")
-        .define("WITH_PNG", "OFF")
-        .define("WITH_ZLIB", "OFF")
+        .define("CMAKE_DISABLE_FIND_PACKAGE_BZip2", "TRUE")
+        .define("CMAKE_DISABLE_FIND_PACKAGE_HarfBuzz", "TRUE")
+        .define("CMAKE_DISABLE_FIND_PACKAGE_PNG", "TRUE")
+        .define("CMAKE_DISABLE_FIND_PACKAGE_ZLIB", "TRUE")
+        .define("CMAKE_DISABLE_FIND_PACKAGE_BrotliDec", "TRUE")
         .profile("Release")
         .build();
     let out_dir = env::var("OUT_DIR").unwrap();
