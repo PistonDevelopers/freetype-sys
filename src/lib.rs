@@ -945,7 +945,7 @@ extern "C" {
     pub fn FT_Get_Track_Kerning(face: FT_Face, point_size: FT_Fixed, degree: FT_Int, akerning: *mut FT_Fixed) -> FT_Error;
     pub fn FT_Get_Glyph_Name(face: FT_Face, glyph_index: FT_UInt, buffer: FT_Pointer, buffer_max: FT_UInt) -> FT_Error;
     pub fn FT_Get_Postscript_Name(face: FT_Face) -> *const c_char;
-    pub fn FT_Select_CharMap(face: FT_Face, encoding: FT_Encoding) -> FT_Error;
+    pub fn FT_Select_Charmap(face: FT_Face, encoding: FT_Encoding) -> FT_Error;
     pub fn FT_Set_Charmap(face: FT_Face, charmap: FT_CharMap) -> FT_Error;
     pub fn FT_Get_Charmap_Index(charmap: FT_CharMap) -> FT_Int;
     pub fn FT_Get_Char_Index(face: FT_Face, charcode: FT_ULong) -> FT_UInt;
