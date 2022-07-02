@@ -17,6 +17,7 @@ fn main() {
         config.generator(s);
     }
     let dst = config
+        .define("CMAKE_INSTALL_LIBDIR", "lib")
         .define("CMAKE_DISABLE_FIND_PACKAGE_BZip2", "TRUE")
         .define("CMAKE_DISABLE_FIND_PACKAGE_HarfBuzz", "TRUE")
         .define("CMAKE_DISABLE_FIND_PACKAGE_PNG", "TRUE")
