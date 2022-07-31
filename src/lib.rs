@@ -19,6 +19,9 @@ use libc::{
     size_t,
 };
 
+mod tt_tables;
+pub use tt_tables::*;
+
 // Basic Data Types
 pub type FT_Byte = c_uchar;
 pub type FT_Bytes = *const FT_Byte;
@@ -334,6 +337,25 @@ pub struct  FT_MM_Var {
     pub num_namedstyles: FT_UInt,
     pub axis: *mut FT_Var_Axis,
     pub namedstyle: *mut FT_Var_Named_Style,
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct  FT_SfntName {
+    pub platform_id: FT_UShort,
+    pub encoding_id: FT_UShort,
+    pub language_id: FT_UShort,
+    pub name_id: FT_UShort,
+
+    pub string: *mut FT_Byte,      /* this string is *not* null-terminated! */
+    pub string_len: FT_UInt,       /* in bytes                              */
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct  FT_SfntLangTag {
+    pub string: *mut FT_Byte,
+    pub string_len: FT_UInt,
 }
 
 // Enums
@@ -1070,4 +1092,8 @@ extern "C" {
     pub fn FT_Get_MM_WeightVector(face: FT_Face, len: *mut FT_UInt, weightvector: *mut FT_Fixed) -> FT_Error;
     pub fn FT_Get_Var_Axis_Flags(master: *const FT_MM_Var, axis_index: FT_UInt, flags: *mut FT_UInt) -> FT_Error;
     pub fn FT_Set_Named_Instance(face: FT_Face, instance_index: FT_UInt) -> FT_Error;
+
+    pub fn FT_Get_Sfnt_Name_Count(face: FT_Face) -> FT_UInt;
+    pub fn FT_Get_Sfnt_Name(face: FT_Face, idx: FT_UInt, aname: *mut FT_SfntName) -> FT_Error;
+    pub fn FT_Get_Sfnt_LangTag(face: FT_Face, langID: FT_UInt, alangtag: *mut FT_SfntName) -> FT_Error;
 }
