@@ -290,6 +290,51 @@ pub struct FT_Span {
     pub coverage: c_uchar,
 }
 
+#[repr(C)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct FT_MM_Axis {
+    pub name: *mut FT_String,
+    pub minimum: FT_Long,
+    pub maximum: FT_Long,
+}
+
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct FT_Multi_Master {
+    pub num_axis: FT_UInt,
+    pub num_designs: FT_UInt,
+    pub axis: [FT_MM_Axis; 4],
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct FT_Var_Axis {
+    pub name: *mut FT_String,
+    pub minimum: FT_Fixed,
+    pub def: FT_Fixed,
+    pub maximum: FT_Fixed,
+    pub tag: FT_ULong,
+    pub strid: FT_UInt,
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct  FT_Var_Named_Style {
+    pub coords: *mut FT_Fixed,
+    pub strid: FT_UInt,
+    pub psid: FT_UInt,
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct  FT_MM_Var {
+    pub num_axis: FT_UInt,
+    pub num_designs: FT_UInt,
+    pub num_namedstyles: FT_UInt,
+    pub axis: *mut FT_Var_Axis,
+    pub namedstyle: *mut FT_Var_Named_Style,
+}
 
 // Enums
 
@@ -477,6 +522,8 @@ pub const FT_OUTLINE_SMART_DROPOUTS  : c_int = 0x10;
 pub const FT_OUTLINE_INCLUDE_STUBS   : c_int = 0x20;
 pub const FT_OUTLINE_HIGH_PRECISION  : c_int = 0x100;
 pub const FT_OUTLINE_SINGLE_PASS     : c_int = 0x200;
+
+pub const FT_VAR_AXIS_FLAG_HIDDEN : FT_UInt = 1;
 
 pub const FT_Err_Ok                            : FT_Error = 0;
 pub const FT_Err_Cannot_Open_Resource          : FT_Error = 1;
@@ -1008,4 +1055,19 @@ extern "C" {
 
     pub fn FT_GlyphSlot_Embolden(slot: FT_GlyphSlot);
     pub fn FT_GlyphSlot_Oblique(slot: FT_GlyphSlot);
+
+    pub fn FT_Get_Multi_Master(face: FT_Face, amaster: *mut FT_Multi_Master) -> FT_Error;
+    pub fn FT_Get_MM_Var(face: FT_Face, amaster: *mut FT_MM_Var) -> FT_Error;
+    pub fn FT_Done_MM_Var(library: FT_Library, amaster: *mut FT_MM_Var) -> FT_Error;
+    pub fn FT_Set_MM_Design_Coordinates(face: FT_Face, num_coords: FT_UInt, coords: *const FT_Long) -> FT_Error;
+    pub fn FT_Set_Var_Design_Coordinates(face: FT_Face, num_coords: FT_UInt, coords: *const FT_Fixed) -> FT_Error;
+    pub fn FT_Get_Var_Design_Coordinates(face: FT_Face, num_coords: FT_UInt, coords: *mut FT_Fixed) -> FT_Error;
+    pub fn FT_Set_MM_Blend_Coordinates(face: FT_Face, num_coords: FT_UInt, coords: *const FT_Fixed) -> FT_Error;
+    pub fn FT_Get_MM_Blend_Coordinates(face: FT_Face, num_coords: FT_UInt, coords: *mut FT_Fixed) -> FT_Error;
+    pub fn FT_Set_Var_Blend_Coordinates(face: FT_Face, num_coords: FT_UInt, coords: *const FT_Fixed) -> FT_Error;
+    pub fn FT_Get_Var_Blend_Coordinates(face: FT_Face, num_coords: FT_UInt, coords: *mut FT_Fixed) -> FT_Error;
+    pub fn FT_Set_MM_WeightVector(face: FT_Face, len: FT_UInt, weightvector: *const FT_Fixed) -> FT_Error;
+    pub fn FT_Get_MM_WeightVector(face: FT_Face, len: *mut FT_UInt, weightvector: *mut FT_Fixed) -> FT_Error;
+    pub fn FT_Get_Var_Axis_Flags(master: *const FT_MM_Var, axis_index: FT_UInt, flags: *mut FT_UInt) -> FT_Error;
+    pub fn FT_Set_Named_Instance(face: FT_Face, instance_index: FT_UInt) -> FT_Error;
 }
