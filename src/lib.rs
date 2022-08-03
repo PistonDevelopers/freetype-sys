@@ -1096,4 +1096,10 @@ extern "C" {
     pub fn FT_Get_Sfnt_Name_Count(face: FT_Face) -> FT_UInt;
     pub fn FT_Get_Sfnt_Name(face: FT_Face, idx: FT_UInt, aname: *mut FT_SfntName) -> FT_Error;
     pub fn FT_Get_Sfnt_LangTag(face: FT_Face, langID: FT_UInt, alangtag: *mut FT_SfntName) -> FT_Error;
+
+    pub fn FT_Face_GetCharVariantIndex(face: FT_Face, charcode: FT_ULong, variant_selector: FT_ULong) -> FT_UInt;
+    pub fn FT_Face_GetCharVariantIsDefault(face: FT_Face, charcode: FT_ULong, variant_selector: FT_ULong) -> FT_Int;
+    pub fn FT_Face_GetVariantSelectors(face: FT_Face) -> *mut FT_UInt;
+    pub fn FT_Face_GetVariantsOfChar(face: FT_Face, charcode: FT_ULong) -> *mut FT_UInt32;
+    pub fn FT_Face_GetCharsOfVariant(face: FT_Face, variant_selector: FT_ULong) -> *mut FT_UInt32;
 }
