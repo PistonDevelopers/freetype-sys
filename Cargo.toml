@@ -13,8 +13,7 @@ repository = "https://github.com/PistonDevelopers/freetype-sys.git"
 homepage = "https://github.com/PistonDevelopers/freetype-sys"
 
 [build-dependencies]
-pkg-config = "0.3.11"
-cmake = "0.1.42"
+cc = "1"
 
 [dependencies]
 libc = "0.2.42"
