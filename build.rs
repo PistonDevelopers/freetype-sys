@@ -1,32 +1,72 @@
-extern crate cmake;
-extern crate pkg_config;
+fn add_sources(build: &mut cc::Build, root: &str, files: &[&str]) {
+    let root = std::path::Path::new(root);
+    build.files(files.iter().map(|src| {
+        let mut p = root.join(src);
+        p.set_extension("c");
+        p
+    }));
 
-use cmake::Config;
-use std::env;
+    build.include(root);
+}
 
 fn main() {
-    let target = env::var("TARGET").unwrap();
-    if !target.contains("android")
-        && pkg_config::Config::new().atleast_version("18.5.12").find("freetype2").is_ok()
-    {
-        return
-    }
+    let mut build = cc::Build::new();
 
-    let mut config = Config::new("freetype2");
-    if let Ok(s) = env::var("FREETYPE_CMAKE_GENERATOR") {
-        config.generator(s);
-    }
-    let dst = config
-        .define("CMAKE_INSTALL_LIBDIR", "lib")
-        .define("CMAKE_DISABLE_FIND_PACKAGE_BZip2", "TRUE")
-        .define("CMAKE_DISABLE_FIND_PACKAGE_HarfBuzz", "TRUE")
-        .define("CMAKE_DISABLE_FIND_PACKAGE_PNG", "TRUE")
-        .define("CMAKE_DISABLE_FIND_PACKAGE_ZLIB", "TRUE")
-        .define("CMAKE_DISABLE_FIND_PACKAGE_BrotliDec", "TRUE")
-        .profile("Release")
-        .build();
-    let out_dir = env::var("OUT_DIR").unwrap();
-    println!("cargo:rustc-link-search=native={}/lib", dst.display());
-    println!("cargo:rustc-link-lib=static=freetype");
-    println!("cargo:outdir={}", out_dir);
+    build
+        .cpp(true)
+        .warnings(false)
+        .include(".")
+        .include("freetype2/include")
+        .define("FT2_BUILD_LIBRARY", None);
+
+    add_sources(
+        &mut build,
+        "freetype2/src",
+        &[
+            "autofit/autofit",
+            "base/ftbase",
+            "base/ftbbox",
+            "base/ftbdf",
+            "base/ftbitmap",
+            "base/ftcid",
+            "base/ftdebug",
+            "base/ftfstype",
+            "base/ftgasp",
+            "base/ftglyph",
+            "base/ftgxval",
+            "base/ftinit",
+            "base/ftmm",
+            "base/ftotval",
+            "base/ftpatent",
+            "base/ftpfr",
+            "base/ftstroke",
+            "base/ftsynth",
+            "base/ftsystem",
+            "base/fttype1",
+            "base/ftwinfnt",
+            "bdf/bdf",
+            "bzip2/ftbzip2",
+            "cache/ftcache",
+            "cff/cff",
+            "cid/type1cid",
+            "gzip/ftgzip",
+            "lzw/ftlzw",
+            "pcf/pcf",
+            "pfr/pfr",
+            "psaux/psaux",
+            "pshinter/pshinter",
+            "psnames/psnames",
+            "raster/raster",
+            "sdf/sdf",
+            "svg/svg",
+            "sfnt/sfnt",
+            "smooth/smooth",
+            "truetype/truetype",
+            "type1/type1",
+            "type42/type42",
+            "winfonts/winfnt",
+        ],
+    );
+
+    build.compile("freetype2");
 }
