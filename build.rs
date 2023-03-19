@@ -1,3 +1,5 @@
+use std::env;
+
 fn add_sources(build: &mut cc::Build, root: &str, files: &[&str]) {
     let root = std::path::Path::new(root);
     build.files(files.iter().map(|src| {
@@ -10,6 +12,16 @@ fn add_sources(build: &mut cc::Build, root: &str, files: &[&str]) {
 }
 
 fn main() {
+    let target = env::var("TARGET").unwrap();
+    if !target.contains("android")
+        && pkg_config::Config::new()
+            .atleast_version("24.3.18")
+            .find("freetype2")
+            .is_ok()
+    {
+        return;
+    }
+
     let mut build = cc::Build::new();
 
     build
