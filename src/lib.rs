@@ -3,14 +3,12 @@
 #![allow(non_upper_case_globals)]
 #![deny(missing_copy_implementations)]
 
-extern crate libc;
-
 use libc::{
     c_char, c_int, c_long, c_short, c_uchar, c_uint, c_ulong, c_ushort, c_void, ptrdiff_t, size_t,
 };
 
 mod tt_tables;
-pub use tt_tables::*;
+pub use crate::tt_tables::*;
 
 // Basic Data Types
 pub type FT_Byte = c_uchar;
