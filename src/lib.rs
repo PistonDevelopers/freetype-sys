@@ -1140,14 +1140,7 @@ extern "C" {
         num_contours: FT_Int,
         anoutline: *mut FT_Outline,
     ) -> FT_Error;
-    pub fn FT_Outline_New_Internal(
-        memory: FT_Memory,
-        num_points: FT_UInt,
-        num_contours: FT_Int,
-        anoutline: *mut FT_Outline,
-    ) -> FT_Error;
     pub fn FT_Outline_Done(library: FT_Library, outline: *mut FT_Outline) -> FT_Error;
-    pub fn FT_Outline_Done_Internal(memory: FT_Memory, outline: *mut FT_Outline) -> FT_Error;
     pub fn FT_Outline_Copy(source: *const FT_Outline, target: *mut FT_Outline) -> FT_Error;
     pub fn FT_Outline_Translate(outline: *const FT_Outline, xOffset: FT_Pos, yOffset: FT_Pos);
     pub fn FT_Outline_Transform(outline: *const FT_Outline, matrix: *const FT_Matrix);
