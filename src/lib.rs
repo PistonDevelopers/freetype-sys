@@ -386,7 +386,8 @@ pub const FT_RENDER_MODE_LIGHT: FT_Render_Mode = 1;
 pub const FT_RENDER_MODE_MONO: FT_Render_Mode = 2;
 pub const FT_RENDER_MODE_LCD: FT_Render_Mode = 3;
 pub const FT_RENDER_MODE_LCD_V: FT_Render_Mode = 4;
-pub const FT_RENDER_MODE_MAX: FT_Render_Mode = FT_RENDER_MODE_LCD_V + 1;
+pub const FT_RENDER_MODE_SDF: FT_Render_Mode = 5;
+pub const FT_RENDER_MODE_MAX: FT_Render_Mode = FT_RENDER_MODE_SDF + 1;
 
 pub type FT_LcdFilter = c_uint;
 pub const FT_LCD_FILTER_NONE: FT_LcdFilter = 0;
