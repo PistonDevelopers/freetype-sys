@@ -1177,7 +1177,7 @@ extern "C" {
     pub fn FT_GlyphSlot_Oblique(slot: FT_GlyphSlot);
 
     pub fn FT_Get_Multi_Master(face: FT_Face, amaster: *mut FT_Multi_Master) -> FT_Error;
-    pub fn FT_Get_MM_Var(face: FT_Face, amaster: *mut FT_MM_Var) -> FT_Error;
+    pub fn FT_Get_MM_Var(face: FT_Face, amaster: *mut *mut FT_MM_Var) -> FT_Error;
     pub fn FT_Done_MM_Var(library: FT_Library, amaster: *mut FT_MM_Var) -> FT_Error;
     pub fn FT_Set_MM_Design_Coordinates(
         face: FT_Face,
