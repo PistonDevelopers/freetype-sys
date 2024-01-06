@@ -349,6 +349,14 @@ pub struct FT_SfntLangTag {
     pub string_len: FT_UInt,
 }
 
+#[repr(C)]
+#[derive(Debug, Hash, PartialEq, Eq)]
+pub struct FT_LayerIterator {
+    pub num_layers: FT_UInt,
+    pub layer: FT_UInt,
+    pub p: *mut FT_Byte,
+}
+
 // Enums
 
 pub type enum_FT_Sfnt_Tag_ = c_uint;
@@ -1252,4 +1260,12 @@ extern "C" {
     pub fn FT_Face_GetVariantSelectors(face: FT_Face) -> *mut FT_UInt;
     pub fn FT_Face_GetVariantsOfChar(face: FT_Face, charcode: FT_ULong) -> *mut FT_UInt32;
     pub fn FT_Face_GetCharsOfVariant(face: FT_Face, variant_selector: FT_ULong) -> *mut FT_UInt32;
+
+    pub fn FT_Get_Color_Glyph_Layer(
+        face: FT_Face,
+        base_glyph: FT_UInt,
+        aglyph_index: *mut FT_UInt,
+        acolor_index: *mut FT_UInt,
+        iterator: *mut FT_LayerIterator,
+    ) -> bool;
 }
