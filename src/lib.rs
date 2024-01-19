@@ -1037,7 +1037,7 @@ extern "C" {
     pub fn FT_Get_Char_Index(face: FT_Face, charcode: FT_ULong) -> FT_UInt;
     pub fn FT_Get_First_Char(face: FT_Face, agindex: *mut FT_UInt) -> FT_ULong;
     pub fn FT_Get_Next_Char(face: FT_Face, char_code: FT_ULong, agindex: *mut FT_UInt) -> FT_ULong;
-    pub fn FT_Get_Name_Index(face: FT_Face, glyph_name: *mut FT_String) -> FT_UInt;
+    pub fn FT_Get_Name_Index(face: FT_Face, glyph_name: *const c_char) -> FT_UInt;
     pub fn FT_Get_SubGlyph_Info(
         glyph: FT_GlyphSlot,
         sub_index: FT_UInt,
