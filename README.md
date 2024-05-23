@@ -3,6 +3,15 @@ freetype-sys [![Build Status](https://travis-ci.org/PistonDevelopers/freetype-sy
 
 Low level bindings for the FreeType font library.
 
+# Statically linking against FreeType
+
+If the `bundled` feature is enabled, `freetype-sys` will build and link a static copy of FreeType. This requires a C compiler. The included version of FreeType is 2.13.2.
+
+```
+[dependencies]
+freetype-sys = { version = "0.21", features = ["bundled"] }
+```
+
 ## For Windows users
 
 ### -pc-windows-gnu
