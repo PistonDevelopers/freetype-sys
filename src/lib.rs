@@ -360,6 +360,18 @@ pub struct FT_LayerIterator {
 // Enums
 
 pub type enum_FT_Sfnt_Tag_ = c_uint;
+pub const FT_SFNT_HEAD: u32 = 0_u32;
+pub const FT_SFNT_MAXP: u32 = 1_u32;
+pub const FT_SFNT_OS2: u32 = 2_u32;
+pub const FT_SFNT_HHEA: u32 = 3_u32;
+pub const FT_SFNT_VHEA: u32 = 4_u32;
+pub const FT_SFNT_POST: u32 = 5_u32;
+pub const FT_SFNT_PCLT: u32 = 6_u32;
+pub const FT_SFNT_MAX: u32 = 7_u32;
+pub type FT_Sfnt_Tag = enum_FT_Sfnt_Tag_;
+
+// Preserved for compatability reasons. These can be removed in the next
+// major release.
 pub const ft_sfnt_head: u32 = 0_u32;
 pub const ft_sfnt_maxp: u32 = 1_u32;
 pub const ft_sfnt_os2: u32 = 2_u32;
@@ -368,7 +380,6 @@ pub const ft_sfnt_vhea: u32 = 4_u32;
 pub const ft_sfnt_post: u32 = 5_u32;
 pub const ft_sfnt_pclt: u32 = 6_u32;
 pub const ft_sfnt_max: u32 = 7_u32;
-pub type FT_Sfnt_Tag = enum_FT_Sfnt_Tag_;
 
 pub type FT_Pixel_Mode = c_uint;
 pub const FT_PIXEL_MODE_NONE: FT_Pixel_Mode = 0;
@@ -954,10 +965,6 @@ pub fn FT_HAS_COLOR(face: FT_Face) -> bool {
 }
 
 extern "C" {
-    pub fn FT_Get_Sfnt_Table(face: FT_Face, tag: FT_Sfnt_Tag) -> *mut c_void;
-}
-
-extern "C" {
     pub fn FT_Init_FreeType(alibrary: *mut FT_Library) -> FT_Error;
     pub fn FT_Done_FreeType(library: FT_Library) -> FT_Error;
     pub fn FT_Set_Default_Properties(library: FT_Library);
@@ -1245,6 +1252,15 @@ extern "C" {
         face: FT_Face,
         langID: FT_UInt,
         alangtag: *mut FT_SfntName,
+    ) -> FT_Error;
+
+    pub fn FT_Get_Sfnt_Table(face: FT_Face, tag: FT_Sfnt_Tag) -> *mut c_void;
+    pub fn FT_Load_Sfnt_Table(
+        face: FT_Face,
+        tag: FT_ULong,
+        offset: FT_Long,
+        buffer: *mut FT_Byte,
+        length: *mut FT_ULong,
     ) -> FT_Error;
 
     pub fn FT_Face_GetCharVariantIndex(
