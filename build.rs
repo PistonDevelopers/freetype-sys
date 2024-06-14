@@ -12,14 +12,15 @@ fn add_sources(build: &mut cc::Build, root: &str, files: &[&str]) {
 }
 
 fn main() {
-    let target = env::var("TARGET").unwrap();
-    if !target.contains("android")
-        && !target.contains("ohos")
-        && pkg_config::Config::new()
-            .atleast_version("24.3.18")
-            .find("freetype2")
-            .is_ok()
-    {
+    if !cfg!(feature = "bundled") {
+        let target = env::var("TARGET").unwrap();
+        if !target.contains("android")
+            && !target.contains("ohos") {
+            pkg_config::Config::new()
+                .atleast_version("24.3.18")
+                .probe("freetype2")
+                .unwrap();
+        }
         return;
     }
 
