@@ -14,8 +14,7 @@ fn add_sources(build: &mut cc::Build, root: &str, files: &[&str]) {
 fn main() {
     if !cfg!(feature = "bundled") {
         let target = env::var("TARGET").unwrap();
-        if !target.contains("android")
-            && !target.contains("ohos") {
+        if !target.contains("android") && !target.contains("ohos") {
             pkg_config::Config::new()
                 .atleast_version("24.3.18")
                 .probe("freetype2")
@@ -31,6 +30,7 @@ fn main() {
         .warnings(false)
         .include(".")
         .include("freetype2/include")
+        .include("libpng")
         .define("FT2_BUILD_LIBRARY", None);
 
     add_sources(
@@ -83,4 +83,36 @@ fn main() {
     );
 
     build.compile("freetype2");
+
+    println!("cargo:rustc-link-lib=z");
+
+    let mut build = cc::Build::new();
+    build.include("libpng");
+    build
+        .file("libpng/png.c")
+        .file("libpng/pngerror.c")
+        .file("libpng/pngget.c")
+        .file("libpng/pngmem.c")
+        .file("libpng/pngpread.c")
+        .file("libpng/pngread.c")
+        .file("libpng/pngrio.c")
+        .file("libpng/pngrtran.c")
+        .file("libpng/pngrutil.c")
+        .file("libpng/pngset.c")
+        .file("libpng/pngtrans.c")
+        .file("libpng/pngwio.c")
+        .file("libpng/pngwrite.c")
+        .file("libpng/pngwtran.c")
+        .file("libpng/pngwutil.c");
+
+    let arch = std::env::var("CARGO_CFG_TARGET_ARCH").unwrap();
+    if arch == "arm" || arch == "aarch64" {
+        build
+            .file("libpng/arm/arm_init.c")
+            .file("libpng/arm/filter_neon_intrinsics.c")
+            .file("libpng/arm/filter_neon.S")
+            .file("libpng/arm/palette_neon_intrinsics.c");
+    }
+
+    build.compile("libpng.a");
 }
