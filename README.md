@@ -34,4 +34,4 @@ rustc-link-search = ["C:\\Path\\To\\binaries\\x86_64"]
 rustc-link-lib = ["freetype"]
 ```
 
-For more informations, check [the official Cargo documentation](https://doc.rust-lang.org/cargo/reference/build-scripts.html#overriding-build-scripts).
+For more information, check [the official Cargo documentation](https://doc.rust-lang.org/cargo/reference/build-scripts.html#overriding-build-scripts).

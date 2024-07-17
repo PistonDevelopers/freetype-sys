@@ -370,7 +370,7 @@ pub const FT_SFNT_PCLT: u32 = 6_u32;
 pub const FT_SFNT_MAX: u32 = 7_u32;
 pub type FT_Sfnt_Tag = enum_FT_Sfnt_Tag_;
 
-// Preserved for compatability reasons. These can be removed in the next
+// Preserved for compatibility reasons. These can be removed in the next
 // major release.
 pub const ft_sfnt_head: u32 = 0_u32;
 pub const ft_sfnt_maxp: u32 = 1_u32;
