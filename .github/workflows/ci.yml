@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+  merge_group:
+
+jobs:
+  rustfmt:
+    runs-on: ubuntu-latest
+    name: cargo fmt
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install stable toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+          components: rustfmt
+
+      - name: cargo fmt
+        run: cargo fmt --all --check
+
+  test-stable:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    name: cargo clippy + test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: install stable toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+          components: clippy
+
+      - name: cargo clippy (default features)
+        run: cargo clippy -- -D warnings
+
+      - name: cargo test
+        run: cargo test --all-features
