@@ -904,63 +904,147 @@ pub struct FT_Raster_Params {
 }
 
 // Macro functions
+
+/// Returns `true` whenever a face object contains horizontal metrics.
+///
+/// This is true for all font formats.
+///
+/// # Safety
+///
+/// `face` must be a valid `FT_Face` that can be dereferenced.
+///
+/// # See also
+///
+/// * [`FT_HAS_VERTICAL()`]
 #[inline(always)]
-pub fn FT_HAS_HORIZONTAL(face: FT_Face) -> bool {
+pub unsafe fn FT_HAS_HORIZONTAL(face: FT_Face) -> bool {
     unsafe { (*face).face_flags & FT_FACE_FLAG_HORIZONTAL != 0 }
 }
 
+/// Returns `true` whenever a face object contains real vertical metrics
+/// (and not only synthesized ones).
+///
+/// # Safety
+///
+/// `face` must be a valid `FT_Face` that can be dereferenced.
+///
+/// # See also
+///
+/// * [`FT_HAS_HORIZONTAL()`]
 #[inline(always)]
-pub fn FT_HAS_VERTICAL(face: FT_Face) -> bool {
+pub unsafe fn FT_HAS_VERTICAL(face: FT_Face) -> bool {
     unsafe { (*face).face_flags & FT_FACE_FLAG_VERTICAL != 0 }
 }
 
+/// Returns `true` whenever a face object contains kerning data
+/// that can be accessed with [`FT_Get_Kerning()`].
+///
+/// # Safety
+///
+/// `face` must be a valid `FT_Face` that can be dereferenced.
 #[inline(always)]
-pub fn FT_HAS_KERNING(face: FT_Face) -> bool {
+pub unsafe fn FT_HAS_KERNING(face: FT_Face) -> bool {
     unsafe { (*face).face_flags & FT_FACE_FLAG_KERNING != 0 }
 }
 
+/// Returns `true` whenever a face object contains a scalable
+/// font face.
+///
+/// This is true for TrueType, Type 1, Type 42, CID, OpenType/CFF,
+/// and PFR font formats.
+///
+/// # Safety
+///
+/// `face` must be a valid `FT_Face` that can be dereferenced.
 #[inline(always)]
-pub fn FT_IS_SCALABLE(face: FT_Face) -> bool {
+pub unsafe fn FT_IS_SCALABLE(face: FT_Face) -> bool {
     unsafe { (*face).face_flags & FT_FACE_FLAG_SCALABLE != 0 }
 }
 
+/// Returns true whenever a face object contains a font whose
+/// format is based on the SFNT storage scheme.
+///
+/// This usually means: TrueType fonts, OpenType fonts, as well
+/// as SFNT-based embedded bitmap fonts.
+///
+/// # Safety
+///
+/// `face` must be a valid `FT_Face` that can be dereferenced.
 #[inline(always)]
-pub fn FT_IS_SFNT(face: FT_Face) -> bool {
+pub unsafe fn FT_IS_SFNT(face: FT_Face) -> bool {
     unsafe { (*face).face_flags & FT_FACE_FLAG_SFNT != 0 }
 }
 
+/// Returns true whenever a face object contains a font face that
+/// contains fixed-width (or ‘monospace’, ‘fixed-pitch’, etc.) glyphs.
+///
+/// # Safety
+///
+/// `face` must be a valid `FT_Face` that can be dereferenced.
 #[inline(always)]
-pub fn FT_IS_FIXED_WIDTH(face: FT_Face) -> bool {
+pub unsafe fn FT_IS_FIXED_WIDTH(face: FT_Face) -> bool {
     unsafe { (*face).face_flags & FT_FACE_FLAG_FIXED_WIDTH != 0 }
 }
 
+/// Returns true whenever a face object contains some embedded bitmaps.
+///
+/// # Safety
+///
+/// `face` must be a valid `FT_Face` that can be dereferenced.
 #[inline(always)]
-pub fn FT_HAS_FIXED_SIZES(face: FT_Face) -> bool {
+pub unsafe fn FT_HAS_FIXED_SIZES(face: FT_Face) -> bool {
     unsafe { (*face).face_flags & FT_FACE_FLAG_FIXED_SIZES != 0 }
 }
 
+/// Returns true whenever a face object contains some glyph names
+/// that can be accessed through [`FT_Get_Glyph_Name()`].
+///
+/// # Safety
+///
+/// `face` must be a valid `FT_Face` that can be dereferenced.
 #[inline(always)]
-pub fn FT_HAS_GLYPH_NAMES(face: FT_Face) -> bool {
+pub unsafe fn FT_HAS_GLYPH_NAMES(face: FT_Face) -> bool {
     unsafe { (*face).face_flags & FT_FACE_FLAG_GLYPH_NAMES != 0 }
 }
 
+/// Returns true whenever a face object contains some multiple masters.
+///
+/// # Safety
+///
+/// `face` must be a valid `FT_Face` that can be dereferenced.
 #[inline(always)]
-pub fn FT_HAS_MULTIPLE_MASTERS(face: FT_Face) -> bool {
+pub unsafe fn FT_HAS_MULTIPLE_MASTERS(face: FT_Face) -> bool {
     unsafe { (*face).face_flags & FT_FACE_FLAG_MULTIPLE_MASTERS != 0 }
 }
 
+/// Returns true whenever a face object contains a CID-keyed font.
+///
+/// # Safety
+///
+/// `face` must be a valid `FT_Face` that can be dereferenced.
 #[inline(always)]
-pub fn FT_IS_CID_KEYED(face: FT_Face) -> bool {
+pub unsafe fn FT_IS_CID_KEYED(face: FT_Face) -> bool {
     unsafe { (*face).face_flags & FT_FACE_FLAG_CID_KEYED != 0 }
 }
 
+/// Returns true whenever a face represents a ‘tricky’ font.
+///
+/// # Safety
+///
+/// `face` must be a valid `FT_Face` that can be dereferenced.
 #[inline(always)]
-pub fn FT_IS_TRICKY(face: FT_Face) -> bool {
+pub unsafe fn FT_IS_TRICKY(face: FT_Face) -> bool {
     unsafe { (*face).face_flags & FT_FACE_FLAG_TRICKY != 0 }
 }
 
+/// Returns true whenever a face object contains tables for
+/// color glyphs.
+///
+/// # Safety
+///
+/// `face` must be a valid `FT_Face` that can be dereferenced.
 #[inline(always)]
-pub fn FT_HAS_COLOR(face: FT_Face) -> bool {
+pub unsafe fn FT_HAS_COLOR(face: FT_Face) -> bool {
     unsafe { (*face).face_flags & FT_FACE_FLAG_COLOR != 0 }
 }
 
