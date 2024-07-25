@@ -3,9 +3,7 @@
 #![allow(non_upper_case_globals)]
 #![deny(missing_copy_implementations)]
 
-use libc::{
-    c_char, c_int, c_long, c_short, c_uchar, c_uint, c_ulong, c_ushort, c_void, ptrdiff_t, size_t,
-};
+use core::ffi::{c_char, c_int, c_long, c_short, c_uchar, c_uint, c_ulong, c_ushort, c_void};
 
 mod tt_tables;
 pub use crate::tt_tables::*;
@@ -27,8 +25,8 @@ pub type FT_UShort = c_ushort;
 pub type FT_Long = c_long;
 pub type FT_ULong = c_ulong;
 pub type FT_Bool = c_uchar;
-pub type FT_Offset = size_t;
-pub type FT_PtrDist = ptrdiff_t;
+pub type FT_Offset = usize;
+pub type FT_PtrDist = isize;
 pub type FT_String = c_char;
 pub type FT_Tag = FT_UInt32;
 pub type FT_Error = c_int;
