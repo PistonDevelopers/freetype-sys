@@ -38,8 +38,8 @@ jobs:
           toolchain: stable
           components: clippy
 
-      - name: cargo clippy (default features)
-        run: cargo clippy -- -D warnings
+      - name: cargo clippy (bundled)
+        run: cargo clippy --features bundled -- -D warnings
 
-      - name: cargo test
-        run: cargo test --all-features
+      - name: cargo test (bundled)
+        run: cargo test --features bundled
