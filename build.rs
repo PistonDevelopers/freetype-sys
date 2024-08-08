@@ -26,7 +26,6 @@ fn main() {
     let mut build = cc::Build::new();
 
     build
-        .cpp(true)
         .warnings(false)
         .include(".")
         .include("freetype2/include")
