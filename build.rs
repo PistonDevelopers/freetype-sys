@@ -29,7 +29,9 @@ fn main() {
         .warnings(false)
         .include(".")
         .include("freetype2/include")
-        .define("FT2_BUILD_LIBRARY", None);
+        .include("libpng")
+        .define("FT2_BUILD_LIBRARY", None)
+        .define("FT_CONFIG_OPTION_USE_PNG", None);
 
     add_sources(
         &mut build,
@@ -81,4 +83,36 @@ fn main() {
     );
 
     build.compile("freetype2");
+
+    println!("cargo:rustc-link-lib=z");
+
+    let mut build = cc::Build::new();
+    build.include("libpng").include("libz-sys/src/zlib");
+    build
+        .file("libpng/png.c")
+        .file("libpng/pngerror.c")
+        .file("libpng/pngget.c")
+        .file("libpng/pngmem.c")
+        .file("libpng/pngpread.c")
+        .file("libpng/pngread.c")
+        .file("libpng/pngrio.c")
+        .file("libpng/pngrtran.c")
+        .file("libpng/pngrutil.c")
+        .file("libpng/pngset.c")
+        .file("libpng/pngtrans.c")
+        .file("libpng/pngwio.c")
+        .file("libpng/pngwrite.c")
+        .file("libpng/pngwtran.c")
+        .file("libpng/pngwutil.c");
+
+    let arch = std::env::var("CARGO_CFG_TARGET_ARCH").unwrap();
+    if arch == "arm" || arch == "aarch64" {
+        build
+            .file("libpng/arm/arm_init.c")
+            .file("libpng/arm/filter_neon_intrinsics.c")
+            .file("libpng/arm/filter_neon.S")
+            .file("libpng/arm/palette_neon_intrinsics.c");
+    }
+
+    build.compile("libpng.a");
 }
