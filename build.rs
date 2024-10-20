@@ -23,6 +23,7 @@ fn main() {
         return;
     }
 
+    /*
     // From libpng/png.h:
     // "If pnglibconf.h is missing, you can copy scripts/pnglibconf.h.prebuilt to pnglibconf.h"
     std::fs::copy(
@@ -30,6 +31,7 @@ fn main() {
         "libpng/pnglibconf.h",
     )
     .unwrap();
+    */
 
     let mut build = cc::Build::new();
 
