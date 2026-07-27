@@ -1,6 +1,9 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
+// This warning should probably be addressed, but that would be a breaking change.
+// For now we simply silence the warning, to get CI running again.
+#![allow(unpredictable_function_pointer_comparisons)]
 #![deny(missing_copy_implementations)]
 
 use core::ffi::{c_char, c_int, c_long, c_short, c_uchar, c_uint, c_ulong, c_ushort, c_void};
