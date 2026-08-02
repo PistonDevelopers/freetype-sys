@@ -1,4 +1,5 @@
 use std::env;
+use std::env::VarError;
 
 fn add_sources(build: &mut cc::Build, root: &str, files: &[&str]) {
     let root = std::path::Path::new(root);
@@ -92,10 +93,22 @@ fn main() {
 
     build.compile("freetype2");
 
-    println!("cargo:rustc-link-lib=z");
+    // libz-sys comma separates multiple include paths.
+    let zlib_include_paths = match env::var("DEP_Z_INCLUDE") {
+        Ok(include_paths) => include_paths.split(",").map(String::from).collect(),
+        Err(VarError::NotPresent) => {
+            // For some targets (e.g. android and -ohos), libz-sys does not emit the variable,
+            // but we expect the header to be in the sysroot instead so it's fine.
+            vec![]
+        }
+        Err(VarError::NotUnicode(_os_str_paths)) => {
+            println!("cargo:warning:libz-sys header files at non-unicode path. Ignoring");
+            vec![]
+        }
+    };
 
     let mut build = cc::Build::new();
-    build.include("libpng").include("libz-sys/src/zlib");
+    build.include("libpng").includes(zlib_include_paths);
     build
         .file("libpng/png.c")
         .file("libpng/pngerror.c")
