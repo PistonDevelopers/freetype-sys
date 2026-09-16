@@ -1366,4 +1366,19 @@ extern "C" {
         acolor_index: *mut FT_UInt,
         iterator: *mut FT_LayerIterator,
     ) -> bool;
+
+    pub fn FT_Get_Advance(
+        face: FT_Face,
+        glyph_index: FT_UInt,
+        load_flags: FT_Int32,
+        padvance: *mut FT_Fixed,
+    ) -> FT_Error;
+
+    pub fn FT_Get_Advances(
+        face: FT_Face,
+        start: FT_UInt,
+        count: FT_UInt,
+        load_flags: FT_Int32,
+        padvance: *mut FT_Fixed,
+    ) -> FT_Error;
 }
